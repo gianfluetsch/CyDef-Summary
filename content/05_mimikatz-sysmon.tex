@@ -5,3 +5,120 @@
 %! Project = cydef_summary
 
 \section{Mimikatz \& Sysmon}
+
+\subsection{Mimikatz}
+
+\subsubsection{What is the use case of mimikatz}
+Mimikatz is a open source program for Microsoft Windows that can be used to display cached credentials by exploiting vulnerabilities.
+
+\subsubsection{What does it mean to get the NTLM hash of John Doe. Is this a problem?}
+The \textit{NTLM} hash is a cryptographic hash function. It is used by the Microsoft LAN Manager and partly by Windows NT-based operating systems to store 128-bit hash values of passwords.
+
+With mimikatz, the \textit{NTLM} as well as the \textit{SHA1} hash and other information can be read out relatively easily using the command \lstinline|sekurlsa::logonpasswords|. Furthermore, even the password of the created user is visible in plain text.
+It is therefore very easy to obtain the password or the \textit{NTLM} hash.
+
+\subsubsection{Pass-the-Hash attack}
+\textit{Pass-the-hash} is an attack method that uses the hash value of a password to authenticate against a system. Through vulnerabilities in the system or in the authentication protocols, the hash value can be read out with tools and used for authentication.
+
+Typically, with \textit{pass-the-hash}, you use an NT hash from a compromised user account to authenticate directly as that user to remote services, either by injecting it into the current Windows user's memory or by passing the hash directly to client applications that accept it.
+
+Pass the hash (PtH) is a method of authenticating as a user without having access to the user's cleartext password. This method bypasses standard authentication steps that require a cleartext password, moving directly into the portion of the authentication that uses the password hash. In this technique, valid password hashes for the account being used are captured using a Credential Access technique. Captured hashes are used with PtH to authenticate as that user. Once authenticated, PtH may be used to perform actions on local or remote systems.
+
+\subsubsection{Pass-the-Ticket attack}
+\textit{Pass-the-ticket} attacks target Kerberos in a similar way to golden ticket and silver ticket attack. However, in \textit{pass-the-ticket} attacks, an attacker does not forge Kerberos tickets. Instead, they steal valid tickets that have already been created and issued and pass them from one system to another to access resources as a legitimate, privileged user.
+
+\subsubsection{Over-Pass-the-Hash (Pass-the-Key) attack}
+The \textit{overpass-the-hash} attack works similarly to the pass-the-hash attack, but takes this technique one step further to obtain a valid Kerberos ticket.
+
+With \textit{overpass-the-hash}, you can use this NT hash twice to now request a full Kerberos GTT or service ticket from the KDC on behalf of this compromised user. This technique also opens up the "pass-the-ticket" attack vector, where the forged but valid (before the expiry date) TGT/ST can now be exported and re-injected for future use, bypassing communication with the KDC.
+
+\newpage
+
+\subsubsection{Kerberos Golden Ticket attack}
+A \textit{golden ticket} attack allows an attacker to create a Kerberos authentication ticket from a compromised service account.
+
+Using the hash of this compromised account and some information about the domain, an attacker can create fraudulent tickets. These tickets appear to be pre-authorized to perform any action the attackers wish without real authentication.
+
+This attack is stealthy and difficult to detect, making it attractive to attackers who plan to live in a domain for a while.
+
+\subsubsection{Kerberos Silver Ticket attack}
+A \textit{silver ticket} attack is similar in concept to a golden ticket and involves compromising credentials and abusing the design of the Kerberos protocol. However, unlike a golden ticket, which gives an attacker unrestricted access to the domain, a \textit{silver ticket} only allows an attacker to forge ticket-granting service (TGS) tickets for specific services. TGS tickets are encrypted with the password hash for the service - so if an attacker steals the hash for a service account, they can forge TGS tickets for that service.
+
+While the scope may be smaller, it is still a powerful tool in an attacker's kit, providing persistent and stealthy access to resources. Since only the password hash of the service account is needed, it is also much easier to execute than a golden ticket.
+
+\subsubsection{Pass-the-Cache attack}
+A \textit{Pass-the-Cache} attack is generally the same as Pass-the-Ticket, but using the stored and encrypted credentials in a Mac/UNIX/Linux system.
+
+This technique allows an attacker to replay Kerberos credentials compromised from a Linux system to Windows systems within an Active Directory domain.
+
+\newpage
+
+\subsection{Sysmon}
+
+\subsubsection{Explain the purpose of sysmon}
+\textit{Sysmon} is a Windows system service and device driver that, once installed on a system, remains resident across system reboots to monitor system activity and log it to the Windows Event Log. It provides detailed information on process creation, network connections and file creation time changes. By collecting the events it generates using the Windows Event Log and then analysing them, you can identify malicious or anomalous activity and understand how intruders and malware operate on your network.
+
+\subsubsection{Explain how and why sysmon is able to detect mimikatz}
+Mimikatz requires the privilege \lstinline|privilege::debug| , as it interacts with processes such as \textit{LSASS}.
+This activity can be detected by focusing on all Sysmon events that have Event ID 10 and where the target process is listed as \lstinline|C:\Windows\system32\lsass.exe|.\\
+
+But this question is answered very well on Medium and is therefore quoted below with reference to the source.\\
+
+\textbf{Using Sysmon to detect command line execution:}\\
+Before attackers can execute Mimikatz and dump Windows credentials, they must first download the binary into your environment. Sysmon Event ID 1 tracks Windows process creation and shows the command line execution used to invoke shell processes.\\
+
+\textbf{Using Sysmon To Detect Obfuscated Command Line Execution}\\
+Threat actors will often obfuscate their command line execution in order to evade endpoint detection. Base64 encoding is a common adversarial obfuscation tactic.\\
+
+\textbf{Using Sysmon To Detect Mimikatz Accessing Lsass Memory}\\
+The lsass process enforces the Windows security policy, verifies user logons, and handles user password changes. If you configure sysmon to watch for Mimikatz accessing the lsass process, sysmon Event ID 10 will show Mimikatz behaving as a parent process and accessing lsass.exe, behaving as a child process.
+
+By adding the following setting to the sysmon Config, the detection of access to the LSASS process can be further improved:
+
+\begin{lstlisting}[language=XML]
+    <!--SYSMON EVENT ID 10 : INTER-PROCESS ACCESS-->
+    <!--DATA: UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace-->
+    <ProcessAccess onmatch="include">
+        <TargetImage condition="contains">lsass.exe</TargetImage>
+    </ProcessAccess>
+\end{lstlisting}
+
+\newpage
+
+\subsubsection{Would it be possible to log an event where a victim user would start a dangerous makro embedded in a Word file that would execute a power shell script?}
+Yes, it is possible to detect such macros.\\
+The following query is necessary to detect word files with embedded macros opened via outlook:\\
+\begin{itemize}
+    \item \lstinline|`event_data.ParentImage: outlook.exe AND event_data.CommandLine: ".doc"`| (sysmon Event ID: 1)
+    \item \lstinline|`event_data.Image: outlook.exe AND event_data.TargetFilename: ".doc"`| (sysmon Event ID: 15)\\
+\end{itemize}
+
+In addition, the following sysmon configuration can be used to create an event for each \textit{Protect Document Editing} or \textit{Activate Macros} (sysmon Event ID: 13).
+
+\begin{lstlisting}[language=XML]
+    <Sysmon schemaversion="4.00">
+        <HashAlgorithms>md5,sha256</HashAlgorithms>
+        <EventFiltering>
+            <RegistryEvent onmatch="include">
+                <TargetObject condition="contains">
+                    Security\Trusted Documents\TrustRecords
+                </TargetObject>
+            </RegistryEvent>
+        </EventFiltering>
+    </Sysmon>
+\end{lstlisting}
+
+\subsubsection{If you reboot/restart the Windows 10 VM, do you need to run sysmon again?}
+No. Once sysmon is installed, is remains resident across system reboots to monitor system activity
+
+\subsubsection{Sysmon rules are organized by Event IDs. Which Event ID is most interesting for detecting mimikatz?}
+This activity can be detected by focussing on any sysmon events that have the event ID of 10 and where the target process is listed as \lstinline|C:\Windows\system32\lsass.exe| and \lstinline|GrantedAccess| is \lstinline|0x1010|.
+
+\subsubsection{Would it be possible to flag the mimikatz detection as alarm in the Event Viewer?}
+According to my research, I have not found anything where Event Viewer alerts can be created via sysmon. All detections from sysmon are displayed in the Event Viewer as \textit{Information}\color{black} and the critical messages can then be filtered via the \textit{event ID}.
+
+\subsubsection{Explain the idea of sigma rules}
+Sigma Rules are a generic and open signature format that allows to describe relevant log events in a straight forward manner. The rule format is very flexible, easy to write and applicable to any type of log file. The main purpose of sigma rules is to provide a structured form in which researchers or analysts can describe their once developed detection methods and make them shareable with others.
+
+\subsubsection{Explain how sigma rules could be beneficial with sysmon}
+With sigma rules, previously unknown mimikatz attacks can be mapped and integrated into Sysmon for detection.

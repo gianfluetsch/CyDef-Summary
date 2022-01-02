@@ -194,3 +194,23 @@
     belowskip = 15pt,
     captionpos = b                              % position of caption (t/b)
 }
+
+\lstdefinelanguage{XML}
+{
+	backgroundcolor = \color{codeBackground},
+	basicstyle=\ttfamily\scriptsize,
+	morestring=[b]",
+	moredelim=[s][\bfseries\color{black}]{>}{<},
+	moredelim=[s][\bfseries\color{black}]{</}{>},
+	% moredelim=[l][\bfseries\color{black}]{/>},
+	% moredelim=[l][\bfseries\color{black}]{>},
+	morecomment=[s]{<?}{?>},
+	morecomment=[s]{<!--}{-->},
+	commentstyle=\color{darkGreen},
+	stringstyle=\color{blue},
+	identifierstyle=\color{red},
+	frame=single,                                   % showing frame outside code (none/leftline/topline/bottomline/lines/single/shadowbox)
+    xleftmargin=15pt,
+    xrightmargin=15pt,
+    frameround=tttt,  
+}
