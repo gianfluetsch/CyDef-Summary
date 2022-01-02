@@ -196,3 +196,30 @@ Based on this information, PID 1956 (explorer.exe) has established a connection 
     apt-get install capstone-tool python3-capstone
     volatility3 -f vmware-win-infected.vmem windows.dumpfiles --pid 3496
 \end{lstlisting}
+
+\subsection{Packed Malware}
+\textit{Packed malware} has given malware creators and developers an opportunity for them to be able to bypass security systems such as antiviruses and anti-malware software that have been put in place by individuals and organizations to detect and capture malware and viruses.\\
+
+To prevent detection and analysis of malware, malware developers use packers. A packer is a tool used to compress together data, resources and the executable files' code. It can also contain code for unpacking the program secretly and execute it.
+
+Basically, packers help malware developers hide their malicious code. This code only gets unpacked and executed once the malware is executed. Apart from compressing malware, a packer can also be used to protect programs from cracking and copying.
+
+\subsubsection{Encryption and packing tools}
+There are a number of tools that can be used to pack and encrypt executable files. However, each of them serves a different purpose. Packers are not malicious on their own. Also, they were not created to hide malicious traits. Their main functionality is to compress executable files hence reducing their size. There are different types of packers. The most commonly used include:\\
+
+\begin{itemize}
+    \item \textbf{UPX (Ultimate Packer for Executables} — this is the most commonly used by malware developers. It is an open source and command-line tool. It also has the ability to unpack the packed files.
+    \item \textbf{ASPack} — it has both a free and premium version. It was created to provide win32-exe file packing and protect it from reverse engineering.
+\end{itemize}
+
+\subsubsection{Identifying a packed sample}
+
+\textbf{Checking PE tool static signature}\\
+This is the simplest and the easiest way. Here, you will try and identify if a malware is packed through the use of static signatures. It is important to note that every packer has unique characteristics that can assist you to easily identify it.\\
+
+\textbf{Evaluating PE section headers}\\
+The difference between a packed and unpacked PE file is that; an unpacked portable executable (PE) file contains the following sections \textit{.text, .code, .data, .idata, .rsrc} and \textit{.reloc} while a packed executable (for example one packed with upx) has section such as \textit{UPX0, UPX1, .aspack} among others.
+With this, we can therefore conclude that after evaluating the section names of a PE file, you can identify one that is packed and one that is not. You can easily find the sections by opening the file in either PEiD or pestudio.\\
+
+\textbf{Using stub execution signs}\\
+As discussed earlier, most packers compress the PE file sections and then they add a new section at the end which contains the unpacking code (stub). Most unpacked PE files start their execution from the first section which is either \textit{.text} or \textit{.code}. However, the packed files will always start their execution from one of the last sections. This is a clear indication that there is a decryption process underway.

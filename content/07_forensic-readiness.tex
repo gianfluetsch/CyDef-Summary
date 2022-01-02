@@ -5,6 +5,72 @@
 %! Project = cydef_summary
 
 \section{Forensic Readiness}
+Unter Forensic Readiness versteht man die technische und organisatorische Vorbereitung, um im Fall eines Sicherheitsvorfalls schnell und zielgerichtet reagieren und eine IT-forensische Nachuntersuchung optimal durchführen zu können.
+
+\subsection{Forensic Readiness Analyse}
+Es sollte eine genaue IST-Analyse der IT-Landschaft durchgeführt, alle bestehenden Richtlinien überprüft und die relevanten Prozesse für den Umgang mit IT-Sicherheitsverletzungen erstellt/ überprüft werden.
+So kann ermittelt werden, ob die bestehenden organisatorischen und technischen Strukturen eine adäquate Reaktion auf sicherheitsrelevante Ereignisse zulassen.\\
+
+\begin{itemize}
+    \item Welche potentiellen Angriffsszenarien sind relevant (Threat Model)?
+    \item Welche Daten müssen im Notfall verfügbar sein?
+    \item Wie sehen die optimalen organisatorischen Voraussetzungen dafür aus?
+    \item Wie sehen die optimalen technischen Voraussetzungen dafür aus?
+\end{itemize}
+
+\subsubsection{Forensic Readiness Optimierung}
+Auf Basis der Analyse können wirkungsvolle Maßnahmen, um sowohl die organisatorischen als auch die technischen Voraussetzungen zu optimieren, erarbeitet werden.
+Dazu gehört die Umsetzung der Maßnahmen, das erstellen von Checklisten und z.B. auch die entsprechende Schulung der Mitarbeiter.\\
+
+\begin{itemize}
+    \item Integration von forensischen Datensicherungen in den Incident Response Prozesse
+    \item IT-Richtlinien, die für die Forensic Readiness von Relevanz sind
+    \item Umsetzung der Massnahmen
+    \item Erstellen von Checklisten
+    \item Notwendige Vereinbarungen mit IT-Dienstleistern
+    \item Schulung der Mitarbeiter
+\end{itemize}
+
+\subsection{Web Forensic Readiness}
+
+\subsubsection{Topologie}
+Client $\rightarrow$ WAF $\rightarrow$ APP $\rightarrow$ API $\rightarrow$ DB
+
+\subsubsection{Ablauf Request}
+\begin{enumerate}
+    \item Request zu WAF $\rightarrow$ \textit{Unique\_ID} wird generiert und an Request \glqq angehängt\grqq
+    \item Request weiter an APP mit \textit{Unique\_ID} (APP muss diese ID loggen)
+    \item Request weiter zu API mit \textit{Unique\_ID} (API muss diese auch loggen)
+    \item Request weiter zu DB mit \textit{Unique\_ID} (DB muss diese auch loggen)\\
+\end{enumerate}
+
+\textbf{Damit kann über die geloggte \textit{Unique\_ID} nachträglich der Weg jedes Requests herausgefunden und analysiert werden.}
+
+\newpage
+
+\subsection{MitM}
+
+\subsubsection{Unverschlüsselte Kommunikation}
+\begin{enumerate}
+    \item Lesen aller Daten (PW, Kreditkarte, Mail)
+    \item Manipulieren aller Daten
+    \item Drop (DoS)\\
+\end{enumerate}
+
+\textbf{Strategien}:
+\begin{itemize}
+    \item On the fly
+    \item Redirect to malicious service
+\end{itemize}
+
+\subsubsection{Verschlüsselte Kommunikation}
+\begin{enumerate}
+    \item Terminate Service (Interception) $\rightarrow$ \textit{CertWarning}
+    \item Downgrade (HTTPS $\rightarrow$ HTTP/ TLS Version Downgrade)
+    \item Mit unverschlüsseltem Content den verschlüsselten Schwächen
+    \item Replay Angriffe
+    \item DoS
+\end{enumerate}
 
 \subsection{Forensic Readiness Apache Reverse Proxy}
 Distributed systems, and those using microservices architectures in particular, scatter the order's log messages further, across multiple locations, to be gathered by centralised logging tools. To make it straightforward to investigate problems, you need a way to group the log messages that relate to a particular order, in all of your systems or services.
@@ -20,6 +86,8 @@ By using the \lstinline|mod_unique_id| module.
 
 \subsubsection{How do you inject the unique-id to the backend service?}
 By adding the \textit{UNIQUE\_ID} into the following Request Header towards to backend service. On both parts it will be logged for logs/ time correlation.
+
+\newpage
 
 \subsection{HTTP and HTTPS MitM Apache Reverse Proxy}
 This exercise is explaining the so-called online phishing attack. We want to learn how to setup http/https listener, that is forwarding everything to the target webserver. We want to create a \textit{http} and \textit{https} listener and both shall forward to the backend system.
@@ -58,3 +126,4 @@ The user is identified on the target system by the public key id. The identity i
     \item 2FA doesn't help if the purpose are live (on the fly).
     \item If a attacker claims to have the private key and a 2FA message is sent to the (correct) owners smartphone, it does help, as the user wouldn't confirm the request.
 \end{itemize}
+

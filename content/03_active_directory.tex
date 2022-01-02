@@ -108,5 +108,25 @@ Um erfolglose RDP Login Versuche im Event Viewer zu suchen, sucht man nach der \
     \item \lstinline|data.win.system.eventID = 4625| and \lstinline|data.win.eventdata.logonType = 3|
 \end{itemize}
 
+\subsection{Kerberos}
+\begin{minipage}{0.45\linewidth}
+    \begin{enumerate}
+        \item Client $\rightarrow$ TGS (Ticket Granting Server = DC): \textit{Anfrage}
+        \item TGS $\rightarrow$ Client: \textit{TGT (Ticket Granting Ticket)}
+        \item Client $\rightarrow$ Fileserver (FS): \textit{TGT}
+        \item FS $\rightarrow$ Client: \textit{schön und gut, will aber spezifisches Ticket}
+        \item Client $\rightarrow$ TGS: \textit{Anfrage spezifisches Ticket für FS}
+        \item TGS $\rightarrow$ Client: \textit{(spezifisches) Ticket für FS}
+        \item Client $\rightarrow$ FS: \textit{(spezifisches) Ticket für FS}
+        \item FS $\rightarrow$ Client: \textit{alles ok}
+    \end{enumerate}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{kerberos}
+        \vspace{-8pt}
+    \end{center}
+\end{minipage}
+
 
 
