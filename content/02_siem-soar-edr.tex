@@ -5,3 +5,61 @@
 %! Project = cydef_summary
 
 \section{SIEM SOAR EDR Velociraptor Yara}
+
+\subsection{SIEM - Security Information and Event Management}
+Sicherheitsinformations- und Ereignisverwaltungslösungen sind für die Sammlung von Protokoll- und Ereignisdaten aus verschiedenen Quellen wie Netzwerken, Servern und Anwendungen sowie für die Aggregation, Identifizierung, kategorisieren und analysieren sie in Echtzeit.
+
+Mit einer SIEM-Lösung sollten Sicherheitsprobleme automatisch erkannt werden und die Möglichkeit bestehen, eine Warnung zu versenden.\\
+
+\begin{itemize}
+    \item Ermöglicht die Mustersuche in Protokolldaten nach Indikatoren für einen Cyberangriff (IOC)
+    \item Ermöglicht die Korrelation von Ereignisinformationen und identifiziert abnormale Aktivitäten
+    \item Alarme nach definierten Alarmregeln
+    \item \textbf{Splunk/ Wazuh} (open-source)
+\end{itemize}
+
+\subsubsection{Sigma}
+\textit{Sigma} ist ein generisches und offenes Signaturformat, mit dem Sie relevante Protokollereignisse auf einfache Weise beschreiben können. Das Regelformat ist sehr flexibel, leicht zu schreiben und auf jede Art von Protokolldatei anwendbar. Das Hauptziel dieses Projekts ist es, eine strukturierte Form bereitzustellen, in der Forscher oder Analysten ihre einmal entwickelten Erkennungsmethoden beschreiben und mit anderen teilen können.\\
+
+\textit{Sigma} ist für Protokolldateien das, was Snort für den Netzwerkverkehr und YARA für Dateien ist.\\
+
+\textbf{Use-Cases}
+\begin{itemize}
+    \item Describe your detection method in Sigma to make it shareable
+    \item Write your SIEM searches in Sigma to avoid a vendor lock-in
+    \item Share the signature in the appendix of your analysis along with IOCs and YARA rules
+    \item Share the signature in threat intel communities - e.g. via MISP
+    \item Provide Sigma signatures for malicious behaviour in your own application
+\end{itemize}
+
+\subsection{SOAR - Security Orchestration, Automation and Response Solutions}
+SOAR sammelt ebenfalls Daten aus verschiedenen Quellen, ähnlich wie ein SIEM, aber SOAR unterstützt den Incident Responder bei der Bewältigung der Krise. SOAR ermöglicht ein automatisiertes Eingreifen, wenn ein Sicherheitsvorfall eintritt. Ein SOAR-System unterstützt den Incident Responder auch bei der Einführung von Sicherheits Gegenmaßnahmen (Active Directory).\\
+
+\begin{itemize}
+    \item Altert Investigation
+    \item Orchestration
+    \item Automation workflow
+    \item \textbf{Velociraptor}
+\end{itemize}
+
+\subsection{EDR - Endpoint Protection and Response}
+Endpoint Detection and Response (EDR), auch bekannt als Endpoint Threat Detection and Response (ETDR), ist eine integrierte Endpunkt-Sicherheitslösung, die eine kontinuierliche Überwachung und Erfassung von Endpunktdaten in Echtzeit mit regelbasierten automatischen Reaktions- und Analysefunktionen
+
+\newpage
+
+\subsection{CERT - Computer Emergency Response Team}
+\begin{itemize}
+    \item Trademark
+    \item Imprecise
+\end{itemize}
+
+\subsection{CSIRT - Computer Emergency Security Incident Response Team}
+A \textit{CSIRT} is a team of IT security experts whose main business is to respond to computer security incidents. It provides the necessary services to handle them and support their constituents to
+recover from breaches.\\
+
+\begin{itemize}
+    \item More precise
+    \item Free to use\\
+\end{itemize}
+
+However, the terms \textit{CERT} and \textit{CSIRT} are used synonymously in daily life.

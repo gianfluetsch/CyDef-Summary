@@ -11,7 +11,7 @@
     \includegraphics[width=1.0\linewidth]{spf_overview}
 \end{center}
 
-\textbf{SPF}\\
+\textbf{SPF - Sender Policy Framework}\\
 Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ein Mail verschicken darf.\\
 \begin{itemize}
     \item \textcolor{OSTPink}{\textbf{MTA}} (violett) macht \textbf{DNS-Lookup} (schwarz) und fragt diesen an, welche IPs berechtig sind Mails zu versenden.\\
@@ -25,14 +25,18 @@ Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ei
 
 Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert hat. Empfänger-MTA interessiert das nicht.\\
 
-\textcolor{cyan}{\textbf{DKIM}}
+\textcolor{cyan}{\textbf{DKIM - DomainKeys Identified Mail}}\\
+\textit{DKIM} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.\\
 \begin{itemize}
     \item Mailserver signiert mail mit private Key
     \item Mail kommt beim violetten MTA an und dieser prüft ob Mail signiert ist
     \begin{itemize}
-        \item Wenn Signatur vorhanden $\rightarrow$ DNS-lookup (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des DNS Servers (schwarz)
+        \item Wenn Signatur vorhanden $\rightarrow$ DNS-lookup (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des DNS Servers (schwarz)\\
     \end{itemize}
 \end{itemize}
+
+\textbf{DMARC - Domain-based Message Authentication, Reporting and Cornformance}\\
+\textit{DMARC} vereinheitlicht die \textit{SPF}- und \textit{DKIM}-Authentifizierungsmechanismen in einem gemeinsamen Rahmen und ermöglicht es den Inhabern von Domänen, zu erklären, wie sie möchten, dass E-Mails von dieser Domäne behandelt werden, wenn sie einen Autorisierungstest nicht besteht.
 
 \newpage
 
