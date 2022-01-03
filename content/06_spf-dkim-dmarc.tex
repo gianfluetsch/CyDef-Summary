@@ -86,6 +86,11 @@ DMARC not available (NA)!
 
 \newpage
 
+\subsection{Spam Mails}
+tbd (mägge)
+
+\newpage
+
 \subsection{RDP NLA}
 
 \subsubsection{Explain NLA}
@@ -120,7 +125,7 @@ Since MitM attacks are no longer possible with NLA, 2FA is not necessary to mini
 
 \textit{2FA} will not fix the fundamental problem of \textit{MitM}, but the attacker can only hijack the victim if the victim is logging into the target server via \textit{MitM}. Mutual Auth would really solve the issue!
 
-\subsubsection{Mutual Authentication (Challenge-Response)}
+\subsubsection{Challenge-Response}
 \textcolor{red}{\textbf{Passwort geht nie übers Netz (nur der Hash des Passwortes)}}\\
 
 \begin{minipage}{0.45\linewidth}
@@ -137,6 +142,9 @@ Since MitM attacks are no longer possible with NLA, 2FA is not necessary to mini
         \vspace{-8pt}
     \end{center}
 \end{minipage}
+
+\subsubsection{Mutual Authentication}
+tbd
 
 \subsubsection{What is the difference between the two nmap outputs in the steps above (enabled/disabled NLA)?}
 As you can see below with \textbf{enabled NLA} the nmap output shows \textit{no SSL} (but RDSTLS), in contrast to \textbf{disabled NLA} where SSL is displayed as enabled (in addition to \textit{RDSTLS}).
