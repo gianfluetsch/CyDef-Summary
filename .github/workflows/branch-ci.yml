@@ -16,3 +16,13 @@ jobs:
           uses: xu-cheng/latex-action@v2
           with:
             root_file: main.tex
+
+        - name: Rename output
+          run: mv main.pdf CyDef_Hacking-Lab_Summary.pdf
+          
+        - name: Upload pdf
+          uses: actions/upload-artifact@v2
+          with:
+            name: CyDef_Hacking-Lab_Summary
+            path: CyDef_Hacking-Lab_Summary.pdf
+            retention-days: 7
