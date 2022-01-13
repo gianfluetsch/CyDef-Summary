@@ -4,14 +4,24 @@
 %! Date = 30. Dez 2021
 %! Project = cydef_summary
 
-\section{SPF/ KDIM/ DMARC \& RDP NLA}
+\section{Mail Security}
+DKIM, SPF und DMARC sind Standards, die verschiedene Aspekte der E-Mail-Authentifizierung ermöglichen.
 
-\subsection{Overview}
 \begin{center}
-    \includegraphics[width=1.0\linewidth]{spf_overview}
+    \includegraphics[width=.8\linewidth]{overview}
 \end{center}
 
-\textbf{SPF - Sender Policy Framework}\\
+\newpage
+
+\begin{center}
+    \includegraphics[width=0.9\linewidth]{spf_overview}
+\end{center}
+
+\subsection{SPF - Sender Policy Framework}
+
+Mit SPF können Absender festlegen, welche IP-Adressen E-Mails für eine bestimmte Domäne senden dürfen.
+
+\subsubsection{Ablauf}
 Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ein Mail verschicken darf.\\
 \begin{itemize}
     \item \textcolor{OSTPink}{\textbf{MTA}} (violett) macht \textbf{DNS-Lookup} (schwarz) und fragt diesen an, welche IPs berechtig sind Mails zu versenden.\\
@@ -23,31 +33,39 @@ Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ei
     \end{enumerate}
 \end{enumerate}
 
-Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert hat. Empfänger-MTA interessiert das nicht.\\
+Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert hat. Empfänger-MTA interessiert das nicht.
 
-\textcolor{cyan}{\textbf{DKIM - DomainKeys Identified Mail}}\\
+\textit{SPF} ist besonders effizient gegen \textcolor{OSTPink}{\textbf{Phishing-Angriffe}}.
+
+\subsection{\textcolor{cyan}{DKIM - DomainKeys Identified Mail}}
 \textit{DKIM} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.\\
+
+\subsubsection{Ablauf}
 \begin{itemize}
     \item Mailserver signiert mail mit private Key
-    \item Mail kommt beim violetten MTA an und dieser prüft ob Mail signiert ist
+    \item Mail kommt beim \textcolor{OSTPink}{MTA} an und dieser prüft ob Mail signiert ist
     \begin{itemize}
-        \item Wenn Signatur vorhanden $\rightarrow$ DNS-lookup (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des DNS Servers (schwarz)\\
+        \item Wenn Signatur vorhanden $\rightarrow$ DNS-lookup (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des \textbf{DNS Servers}\\
     \end{itemize}
 \end{itemize}
 
-\textbf{DMARC - Domain-based Message Authentication, Reporting and Cornformance}\\
+\textit{DKIM} ist besonders effizient gegen \textcolor{OSTPink}{\textbf{Man-in-the-middle-Angriffe}}.
+
+\subsection{DMARC - Domain-based Message Authentication, Reporting and Cornformance}
 \textit{DMARC} vereinheitlicht die \textit{SPF}- und \textit{DKIM}-Authentifizierungsmechanismen in einem gemeinsamen Rahmen und ermöglicht es den Inhabern von Domänen, zu erklären, wie sie möchten, dass E-Mails von dieser Domäne behandelt werden, wenn sie einen Autorisierungstest nicht besteht.
 
 \newpage
 
-\subsection{Opportunistic TLS Encryption}
+\subsection{Labs}
+
+\subsubsection{Opportunistic TLS Encryption}
 By checking the pcap files, one can see the \textit{STARTTLS} messages which will let us know tls encryption has been used.
 
 \begin{center}
     \includegraphics[width=1.0\linewidth]{tls_encryption}
 \end{center}
 
-\subsection{SPF}
+\subsubsection{SPF}
 Wenn \textit{SPF} (Sender Policy Framework) verwendet wird, sollte dies im Header/ Log ersichtlich sein!
 \begin{center}
     \includegraphics[width=1.0\linewidth]{spf}
@@ -59,27 +77,27 @@ Wenn \textit{SPF} (Sender Policy Framework) verwendet wird, sollte dies im Heade
 
 \newpage
 
-\subsection{DKIM}
+\subsubsection{DKIM}
 Wenn \textit{DKIM} (DomainKeys Identified Mail) verwendet wird, sollte dies im Header/ Log ersichtlich sein!
 
 \begin{center}
     \includegraphics[width=1.0\linewidth]{dkim}
 \end{center}
 
-Due to the MX of Compass, the \textit{DKIM} service is initialized. But the headers from the OWA doe not have DKIM headers applied. Thus, DKIM isn't used!
+\textbf{Due to the MX of Compass, the \textit{DKIM} service is initialized. But the headers from the OWA doe not have DKIM headers applied. Thus, DKIM isn't used!}
 
 \begin{center}
     \includegraphics[width=0.8\linewidth]{dkim2}
 \end{center}
 
 \subsection{DMARC}
-\textit{DMARC} (Domain-based Message Authentication) is available!
+\textbf{\textit{DMARC} is available!}
 
 \begin{center}
     \includegraphics[width=0.6\linewidth]{dmarc}
 \end{center}
 
-DMARC not available (NA)!
+\textbf{DMARC not available (NA)!}
 \begin{center}
     \includegraphics[width=0.4\linewidth]{dmarc2}
 \end{center}

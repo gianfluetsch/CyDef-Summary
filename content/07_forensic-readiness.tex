@@ -36,6 +36,11 @@ Dazu gehört die Umsetzung der Maßnahmen, das erstellen von Checklisten und z.B
 \subsubsection{Topologie}
 Client $\rightarrow$ WAF $\rightarrow$ APP $\rightarrow$ API $\rightarrow$ DB
 
+\begin{center}
+    \includegraphics[width=1.0\linewidth]{web_fr}
+    \vspace{-8pt}
+\end{center}
+
 \subsubsection{Ablauf Request}
 \begin{enumerate}
     \item Request zu WAF $\rightarrow$ \textit{Unique\_ID} wird generiert und an Request \glqq angehängt\grqq
@@ -45,6 +50,21 @@ Client $\rightarrow$ WAF $\rightarrow$ APP $\rightarrow$ API $\rightarrow$ DB
 \end{enumerate}
 
 \textbf{Damit kann über die geloggte \textit{Unique\_ID} nachträglich der Weg jedes Requests herausgefunden und analysiert werden.}
+
+\subsubsection{Unique-ID zum Logfile hinzufügen}
+2 verschiedene Arten möglich:
+\begin{itemize}
+    \item Vorkonfigurierte Protokollrichtlinie ,,ForensicLog`` verwenden (nicht konfigurierbar)
+    \item Hinzufügen einer UNIQUE-ID zum benutzerdefinierten Protokoll (sehr flexibel)
+\end{itemize}
+
+\subsubsection{Unique-ID Vorteile}
+\begin{itemize}
+    \item Korrelation von Ereignissen zwischen Multi-Tier- und Mikro-Service-Architekturen
+    \item Weil ein Zeitstempel nicht ausreicht
+    \item Der erste Server (der dem Internet zugewandt ist) sollte die Unique-ID generieren und sie in die eigenen Protokolldateien aufnehmen. Außerdem sollte die Unique-ID an die Backend-Dienste weitergegeben werden, in der Regel durch Hinzufügen eines speziellen Headers. Die Backend-Dienste sollten die Unique-ID parsen und zu den eigenen Protokollen hinzufügen. Außerdem sollte er die Unique-ID jedem weiteren Server oder jeder weiteren Instanz hinzufügen. Wenn dies bei allen Diensten der Fall wäre, könnten Sie jederzeit herausfinden, wer, wann, wo etwas passiert ist.
+    \item Ohne die Unique-ID sind Unternehmen aufgeschmissen und müssen sich auf Zeitstempel verlassen.
+\end{itemize}
 
 \newpage
 

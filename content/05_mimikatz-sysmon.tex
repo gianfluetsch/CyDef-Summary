@@ -6,10 +6,196 @@
 
 \section{Mimikatz \& Sysmon}
 
+\subsection{Windows Credential Manager}
+
+\subsubsection{Logon Session}
+Windows erstellt bei erfolgreicher Authentifizierung eine Logon Session
+\begin{itemize}
+    \item Benutzeranmeldeinformationen werden in lsass.exe gespeichert
+    \item Betriebssystem kann sie später für SSO bei anderen Diensten verwenden
+    \item Benutzeranmeldeinformationen sind an Authentifizierungspakete innerhalb der Logon Session gebunden:
+    \begin{itemize}
+        \item NTLM-Hashes
+        \item Kerberos-Tickets/Keys
+        \item Passwörter im Klartext
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Tokens}
+Aktueller Sicherheitskontext eines Prozesses/Threads
+\begin{itemize}
+    \item Thread/Prozess verwendet ein Token im Namen eines Benutzers
+    \item Token sind an eine Logon Session gebunden und bestimmen, wie das Credential verwendet wird
+\end{itemize}
+
+\subsubsection{Logon Session Types}
+\begin{itemize}
+    \item \textbf{Network Logons} (Type 3):\\
+    Clients beweist, dass Anmeldedaten hat, \underline{senden aber nicht}! (NTLM-Challenge/Response $\rightarrow$ Pass-the-Hash auf SMB-Dateiserver)
+    \item \textbf{Non-Network Logon} (Interactive/NetworkCleartext):\\
+    Anmeldedaten \underline{werden zum Server gesendet} und \underline{in LSASS Memory} \underline{gespeichert} (z.B. RDP interactive logon)
+\end{itemize}
+
+Mit \underline{Network Logon} können \underline{keine} Credentials gestohlen werden!
+
+\subsubsection{Token Types \& Impersonation}
+
+\textbf{Primary Token}:\\
+ein Prozess-Token (Sicherheitskontext des mit dem Prozess verbundenen Benutzerkontos)\\
+
+\textbf{Impersonating Token}:\\
+ein Thread-Token (um andere Token in Client/Server-Szenarien zu verkörpern)\\
+
+\textbf{Impersonating Levels}:
+\begin{itemize}
+    \item Anonymous\\
+    Entfernter Server kann einen Client nicht identifizieren, der Thread agiert als anonymer Benutzer.
+    \item Identification\\
+    Entfernte Server kann den Benutzer identifizieren, aber nicht ,,impersonaten``
+    \item Impersonation\\
+    Der entfernte Server kann den Client über eine Computergrenze hinweg identifizieren und sich als dieser ausgeben (Netzwerkanmeldung beim Server)
+    \item Delegation\\
+    Der Server kann sich über mehrere Grenzen hinweg als Client ausgeben und Anrufe im Namen des Clients tätigen (bekannt als Kerberos ,,double hop``)
+\end{itemize}
+
+\textbf{Bemerkung:}
+Wird ein \underline{Impersonation Token} mit \underline{Anonymous} oder \underline{Identification Level} gestohlen, kann es \underline{nicht} für \underline{remote authentifikation} verwendet werden! \\
+Wird ein \underline{Impersonation oder Process Token} mit \underline{Impersonation} \underline{Delegation Level} gestohlen, \underline{kann es} für \underline{remote authentifikation} verwendet werden (falls korrespondierende Logon Session credentials hat)!
+
+\newpage
+
+\subsubsection{Mimikatz und Tokens}
+Mimikatz kann mit existierenden Prozess und Thread Token interagieren:
+\begin{itemize}
+    \item Abgreifen
+    \item Imitieren
+\end{itemize}
+
+\subsubsection{Douple-Hop Problem}
+Wenn Code mit WMI oder WinRM aus der Ferne ausgeführt wird, erhalten man ein Token, das an eine Network Logon Session gebunden ist $\rightarrow$ Anmeldeinformationen werden nicht tatsächlich an den Remote-Host gesendet.\\
+Von diesem kompromittierten Host aus kann man sich \underline{nicht bei anderen Ressourcen im Netzwerk authentifizieren}!\\
+\textbf{Workaround:}
+\begin{itemize}
+    \item Anderes Token verwenden, das auf eine Non-Network Logon Session verweist:
+    \begin{itemize}
+        \item Stehlen eines Tokens
+        \item Einschleusen in einen anderen Prozess
+    \end{itemize}
+    \item Erstellen eines neuen Tokens, das auf eine Non-Network Logon Session mit gestohlenen Anmeldedaten verweist
+    \item Anmeldeinformationen in die aktuelle Anmeldesitzung laden (z.B. pass-the-ticket)
+\end{itemize}
+
 \subsection{Mimikatz}
 \textit{Mimikatz} kann nicht verwendet werden um lokaler Admin zu werden, sondern um sich danach weiter Zugriff auf dem System zu verschaffen.
 
 Als lokaler Admin versucht \textit{Mimikatz} Domain-Admin Credentials auszulesen, welche lokal gespeichert/ gecached sind.
+
+\subsubsection{Übersicht}
+\begin{itemize}
+    \item Post-Exploitation-Tool zum Abrufen von Anmeldedaten
+    \item Nicht verwendet werden um lokaler Admin zu werden
+    \item Erfordert lokale Admin-Rechte
+    \item Versucht Domain-Admin Credentials auszulesen, welche lokal gespeichert/gecached sind.
+    \item Abrufen von Anmeldeinformationen aus dem LSASS-Speicher oder SAM-Dateien:
+    \begin{itemize}
+        \item Klartext-Passwörter $\rightarrow$  abhängig von Windows-Version und GPO-Einstellungen
+        \item NTLM-Hashes
+        \item Kerberos-Tickets
+    \end{itemize}
+    \item Kann Pass-the-Hash-Angriffe durchführen
+    \item Kann Pass-the-Ticket-Angriffe durchführen
+    \item Kann benutzerdefinierte golden Tickets erstellen (für Kerberos-Authentifizierung)
+\end{itemize}
+
+\subsubsection{Extract local credentials from SAM}
+Das lsadump Modul ermöglicht die Interaktion mit der local security authority (LSA), um lokale Anmeldeinformationen von einem Rechner zu extrahieren.
+
+\subsubsection{Dumping Credentials from LSASS Memory}
+Das sekurlsa Modul ermöglicht die Interaktion mit der local security authority subsytem process memory (LSASS.exe)
+Die Interaktion mit dem Speicher von lsass.exe ist der Feind Nr. 1 für Abwehrprodukte! Speicher von lsass.exe sollte überwachen werden.
+
+\subsubsection{The output}
+Für jede Anmeldesitzung zählt Mimikatz die Anmeldedaten in jedem Authentifizierungspaket auf:\\
+Thread/Process $\rightarrow$ Token $\rightarrow$ Logon Session $\rightarrow$ Auth Package $\rightarrow$ Credential
+
+\subsection{DCSync}
+\begin{itemize}
+    \item \textbf{Grundlegend:} ,,Simuliert, dass ein DC einen anderen DC bittet, ein oder mehrere Objekte inkl. Anmeldeinformationen zu replizieren``.
+    \item Späte Attacke zur Erlangung beliebiger Benutzer- und Rechnerberechtigungen (Kerberos-Schlüssel / NTLM-Hashes)
+    \item Verlässt sich auf Datenreplikationsfunktionen zwischen mehreren Domänencontrollern über Microsoft Directory Replikationsdienst-Remote-Protokoll (MS-DRSR)
+    \item Erfordert bestimmte Berechtigungen (standardmässig nur Domänenadministratoren und Domänencontroller)
+\end{itemize}
+
+\subsection{Cobalt Strike}
+%TODO: What is cobalt strike?
+
+\subsection{DPAPI}
+Die data protection API (DPAPI) bietet eine Reihe von API-Aufrufen (CryptProtectData / CryptUnprotectData), die es Anwendungen ermöglichen, Daten-"Blobs" auf einem System zu verschlüsseln/entschlüsseln
+\begin{itemize}
+    \item Übergeben der API ein Byte-Array und optionale Entropie $\rightarrow$  erhalte verschlüsselte Daten
+    \item Schlüssel sind mit dem System oder dem Benutzer verknüpft und werden vom Betriebssystem ,,automatisch`` verarbeitet.
+    \item Bietet Anwendungen eine einfache Möglichkeit, Geheimnisse relativ sicher auf der Festplatte zu speichern, ohne sich um den Aufwand für die Schlüsselverwaltung usw. kümmern zu müssen.
+\end{itemize}
+
+Beispiele dafür sind:
+\begin{itemize}
+    \item \textbf{User:}
+    \begin{itemize}
+        \item Windows Credentials (RDP cred)
+        \item Windows Vaults
+        \item Chrome login
+        \item ...
+    \end{itemize}
+    \item \textbf{System:}
+    \begin{itemize}
+        \item Scheduled tasks
+        \item Azure AD Connect accounts
+        \item Wifi PW
+        \item ...
+    \end{itemize}
+\end{itemize}
+\subsubsection{User Master Key}
+Aus dem Passwort eines Benutzers wird ein "Vorschlüssel" abgeleitet, der dann zur Entschlüsselung eines oder mehrerer "Hauptschlüssel"-Blobs verwendet wird:
+\begin{center}
+    \vspace{-8pt}
+    \includegraphics[width=.4\linewidth]{dpapi_master_key}
+    \vspace{-8pt}
+\end{center}
+
+\subsubsection{decrypt User Secrets}
+DPAPI-Benutzer-Masterkeys befinden sich im LSASS-Speicher für angemeldete Benutzer. Im Kontext eines Benutzers ist die einfachste Entschlüsselungsmethode für viele (aber nicht alle) DPAPI Blobs, CryptUnprotectData() aufzurufen, damit das Betriebssystem den Blob entschlüsselt.
+
+\subsubsection{get the User Master Key}
+Um DPAPI-Datenblöcke OHNE Verwendung der etablierten APIs zu entschlüsseln wird der SHA1 des entschlüsselten Masterkeys benötigt. Kann mit Mimikatz aus LSASS gelesen werden.
+
+\subsubsection{decrypt Machine Secrets}
+Zum Entschlüsseln von Machine Secrets wird das DPAPI\_SYSTEM LSA Secret benötigt. Dieser Schlüssel kann dann verwendet werden, um die Hauptschlüssel der Maschinen zu entschlüsseln.
+
+\subsubsection{Credentials, Vaults, .rdg, Chrome, ...}
+Credentials werden im Credentials-Ordnern aufbewahrt: in sich geschlossene Strukturen\\
+Vaults werden in Vaults-Ordnern aufbewahrt, haben eine Policy.vpol, die mit einem Hauptschlüssel entschlüsselt wird, zwei AES Schlüssel innerhalb der Richtlinie werden dann zur Entschlüsselung einer oder mehrerer .vcrd-Dateien verwendet.\\
+Mimikatz kann diese entschlüsseln (mit SHA1 des Masterkeys). %TODO: Stimmt das?
+
+\subsection{Credential Abuse Countermeasures}
+
+\subsubsection{Was KB2871997 macht (Verbesserung von Microsoft)}
+Neben anderen Verbesserungen zur Verringerung des Risikos von Pass-the-Hash-Angriffen wird die Art und Weise verbessert, wie Windows Anmeldedaten behandelt, z. B:
+\begin{itemize}
+    \item Beschränkung des Zwischenspeichers für Anmeldeinformationen auf die Lebensdauer der Anmeldung
+    \item Beschränkung des Zwischenspeichers für von Kerberos/NTLM/Digest/CredSSP bereitgestellte Anmeldeinformationen
+    \item Kerberos-Zwischenspeicher für Klartextkennwörter einschränken
+    \item keine Anmeldedaten in CredSSP zwischenspeichern
+    \item Verwendung von Anmeldeinformationen für Digest einschränken
+\end{itemize}
+
+\subsubsection{Countermeasures Zusammenfassung}
+\begin{itemize}
+    \item Keine Wiederverwendung von Passwörtern
+    \item Verwendung von sicheren Passwörtern und Schutz von Hashes
+    \item Implementieren Sie Anmeldebeschränkungen für Ihre privilegierten Konten, um die Gefährdung zu begrenzen
+    \item Implementieren Sie ein Active Directory-Verwaltungsschichtmodell
+    \item Nutzen Sie die Gruppe "Geschützte Benutzer" in Windows AD
+\end{itemize}
 
 \subsubsection{What is the use case of mimikatz}
 Mimikatz is a open source program for Microsoft Windows that can be used to display cached credentials by exploiting vulnerabilities.
@@ -34,8 +220,6 @@ Pass the hash (PtH) is a method of authenticating as a user without having acces
 The \textit{overpass-the-hash} attack works similarly to the pass-the-hash attack, but takes this technique one step further to obtain a valid Kerberos ticket.
 
 With \textit{overpass-the-hash}, you can use this NT hash twice to now request a full Kerberos GTT or service ticket from the KDC on behalf of this compromised user. This technique also opens up the "pass-the-ticket" attack vector, where the forged but valid (before the expiry date) TGT/ST can now be exported and re-injected for future use, bypassing communication with the KDC.
-
-\newpage
 
 \subsubsection{Kerberos Golden Ticket attack}
 A \textit{golden ticket} attack allows an attacker to create a Kerberos authentication ticket from a compromised service account.

@@ -5,6 +5,15 @@
 %! Project = cydef_summary
 
 \section{Active Directory}
+
+\subsection{Was ist ein AD?}
+\begin{itemize}
+    \item Single-Sign On (Kerberos)
+    \item Mit Domänenkennwort an jedem Computer anmelden
+    \item Zentrales Management für praktisch alles
+\end{itemize}
+
+\subsubsection{Beschreibung}
 \begin{itemize}
     \item Active Directory (AD) is a directory service (database) developed by Microsoft
     \item Used for centralized management of computers, servers, users, …
@@ -33,6 +42,128 @@
     \end{itemize}
 \end{itemize}
 
+\subsubsection{Terminologie}
+\begin{itemize}
+    \item Container
+    \begin{itemize}
+        \item Übergeordnetes Objekt für bestimmte Arten von AD-Objekten
+        \item Forests, Domains, OUs, Sites, subnets
+    \end{itemize}
+    \item Domain
+    \begin{itemize}
+        \item Objekte werden immer in einer Domäne gesammelt
+        \item Logische Gruppe von Netzwerkobjekten (Computer, Benutzer, Geräte)
+        \item Identifiziert durch einen DNS-Namen (Namespace)
+    \end{itemize}
+    \item Tree
+    \begin{itemize}
+        \item Sammlung von einer oder mehreren Domänen oder Trees
+        \item Verknüpft in einer transitiven Vertrauenshierarchie
+    \end{itemize}
+    \item Forest
+    \begin{itemize}
+        \item Einzelne Active Directory-Instanz
+        \item Sammlung von Bäumen, die einen gemeinsamen globalen Katalog nutzen
+        \item Sicherheitsabgrenzung (Security Boundary)
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Security Principals}
+Ist eine Entität, die authentifiziert werden kann (z.B.\ Benutzer, Computer, Gruppen)\\
+
+\textbf{SID} (Security Identifier) identifiziert einen Security Principal eindeutig.\\
+
+\begin{center}
+    \vspace{-8pt}
+    \includegraphics[width=.7\linewidth]{sid}
+    \vspace{-8pt}
+\end{center}
+
+SID mit der Relativen Identifier ID (RID) 512 sind Domain Admins und somit für Angreifer von hoher bedeutung!
+
+\subsubsection{ACL: Access Control List}
+Eine access control list (ACL) ist eine Liste von access control entries (ACE). ACE spezifiziert die Zugriffsrechte,allowed, denied oder audited. Der security descriptor für ein Objekt kann 2 Typen von ACL beinhalten.
+
+\begin{itemize}
+    \item Discretionary Access Control (DACL):\\
+    Eine Liste identifiziert die Trustees, denen der Zugriff auf ein sicheres Objekt erlaubt oder verweigert wird
+    \item System Access Control (SACL):\\
+    Ermöglicht Administratoren die Protokollierung von Zugriffsversuchen auf ein gesichertes Objekt
+\end{itemize}
+
+\subsubsection{Administrators}
+\begin{itemize}
+    \item BUILTIN \textbackslash Administrators\\
+    Lokaler Admin-Zugang auf einem Domänencontroller
+    \item Domain Admins\\
+    Administrativer Zugriff auf alle Ressourcen in der zugehörigen Domäne.
+    \item Enterprise Admins\\
+    Existiert nur in der Forest Root. Wird implizit zu ,,Domain Admins`` jeder untergeordneten Domain hinzugefügt.
+    \item Schema Admins\\
+    Kann das Domänen-/Forstschema ändern.
+    \item Server Operators\
+    Kann Domänenserver verwalten.
+    \item Account Operators\\
+    Kann jeden Benutzer verwalten, der nicht zu einer ,,privilegierten`` Gruppe gehört.
+\end{itemize}
+
+\subsection{GPO: Group Policy Objects}
+
+\subsubsection{SYSVOL}
+\begin{itemize}
+    \item Das System-Volume (SYSVOL) ist ein spezielles Verzeichnis auf jedem DC
+    \item Besteht aus mehreren Ordnern, von denen einer gemeinsam genutzt wird und als SYSVOL-Freigabe bezeichnet wird.
+    \item Der Standardspeicherort ist \%SYSTEMROOT\%\textbackslash SYSVOL\textbackslash sysvol
+    \item Kann während DC-Promotion-Prozesses oder später geändert werden.
+    \item SYSVOL setzt sich aus Ordnern zusammen:
+    \begin{itemize}
+        \item Gruppenrichtlinienvorlagen (GPTs), die über die SYSVOL-Replikation repliziert werden.
+        \item Der Gruppenrichtlinien Container (GPC) wird über die Active Directory-Replikation repliziert.
+        \item Skripte, wie z. B. Startskripte, auf die in einem GPO verwiesen wird.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{GPO}
+\begin{itemize}
+    \item Ein Gruppenrichtlinienobjekt (GPO) ist eine virtuelle Sammlung von Richtlinien Einstellungen.
+    \item Ein GPO hat einen eindeutigen Namen, z. B. eine GUID.
+    \item Gruppenrichtlinieneinstellungen sind in einem GPO enthalten. Ein GPO kann Richtlinieneinstellungen im Dateisystem und im Active Directory darstellen.
+    \item Die GPO-Einstellungen werden von den Clients ausgewertet.
+    \item Um eine Gruppenrichtlinie zu erstellen, kann ein Administrator den Group Policy Object Editor verwenden
+\end{itemize}
+
+\subsubsection{Folder Policy}
+\begin{itemize}
+    \item Erstellt ein Ordner auf jedem Computer in der Domain
+\end{itemize}
+
+\subsubsection{File Policy}
+\begin{itemize}
+    \item Erstellt ein File auf jedem Computer in der Domain
+    \item Source (z.B. SYSVOL) und Destination (z.B. C-Laufwerk) wird angegeben
+\end{itemize}
+
+\subsubsection{Applying Policy}
+\textbf{Auf Server direkt}
+\begin{itemize}
+    \item Auf dem server als Admin \texttt{\small gpupdate/force} in cmd.exe ausführen
+\end{itemize}
+
+\textbf{Auf DC für alle}
+\begin{itemize}
+    \item Auf Domain Controller PowerShell öffnen als Admin
+    \item \texttt{\small \$computers = Get-ADComputer -Filter *}
+    \item \texttt{\small \$computers | ForEach-Object -Process {Invoke-GPUpdate -Computer \$\_.name -RandomDelayInMinutes 0 -Force}}
+\end{itemize}
+
+\subsubsection{Execute Script via GPO}
+\begin{itemize}
+    \item GPO Editor
+    \item Policies $\rightarrow$ Preferences $\rightarrow$ Control Panel Settings
+    \item Schedule Task
+    \item Select Location of script
+\end{itemize}
+
 \subsection{Active Directory Threats}
 \begin{itemize}
     \item The AD is a central target for attackers, because if compromised, everything is compromised
@@ -49,63 +180,47 @@
     \end{itemize}
 \end{itemize}
 
+\subsection{Active Directory Information Gathering}
 
-\subsection{Logging}
-Über eine GPO kann ein Logging-Agent (z.B. der Wazuh-Agent) einfach auf allen gewünschten Servern installiert und konfiguriert werden.
-Diesen Agent sollte man so konfigurieren, dass er alle wichtigen und relevanten Logs (z.B. die RDP Logs) ebenfalls an Wazuh weiterleitet.
-Danach sind diese Logs auch innerhalb von Wazuh zentral ersichtlich und filterbar.
+\subsubsection{ADUC: Active Directory Users \& Computers}
+Wird normalerweise zur konfiguration benutzt.
 
-Dabei werden die Events aus dem EventLog an Wazu weitergeleitet und es kann somit auch nach der \textit{EventID} gefiltert werden.
+\subsubsection{AD Explorer}
+when you don't have ADUC, use Sysinternals tools
 
-\subsubsection{EventID 1149}
-Successful network authentication (successfully executed an RDP network connection).
+\subsubsection{Net Tools}
+Im Terminal
 
-Event 1149 is logged when there is a successful RDP logon to the computer. Before Windows 7 and Windows Server 2012, 1149 would be logged for any initiation of an RDP connection, so it was not a useful indicator for an actual successful application of user credentials.
-
-But, that has changed, and all modern OS versions will only log 1149 if the username in the event was successfully authenticated. It also includes the IP address of the source of the connection, which is useful information. If an account is used and successfully authenticates but does not have
-permission to RDP to the computer due to other restrictions, event 1149 is not generated.
-
-\newpage
-
-\subsubsection{Phases of RDP-Connection}
-
-\begin{minipage}{0.45\linewidth}
-    \begin{enumerate}
-        \item Connection Initiation
-        \item Basic Settings Exchange
-        \item Channel Connection
-        \item RDP Security Commencement
-        \item Secure Settings Exchange
-        \item Optional Connect-Time Auto-Detection
-        \item Licensing
-        \item Optional Multitransport Bootstrapping
-        \item Capabilities Exchange
-        \item Connection Finalization
-    \end{enumerate}
-\end{minipage}
-\begin{minipage}{0.5\linewidth}
-    \begin{center}
-        \includegraphics[width=1.2\linewidth]{rdp_phases}
-        \vspace{-8pt}
-    \end{center}
-\end{minipage}
-
-\subsubsection{Explain how you filtered every RDP login attempt}
-The TerminalServices-RemoteConnectionManager Log is not forwarded to Wazuh.\\
-Unable to filter for all the attempts.
-With the current Wazu setup, one must filter for Logon Type 3 \& 10 (remote logon types)\\
-
+\subsubsection{WMI: Windows Management Instrumentation}
+WMI (terminal tool) wird unterschätzt und kann viele Dinge tun:
 \begin{itemize}
-    \item \lstinline|data.win.system.eventID = 4624| or \lstinline|data.win.system.eventID = 4625|
-    \item \lstinline|data.win.sytem.eventID: 4624| and \lstinline|data.win.evendata.logonType: 3|
+    \item Laufende Prozesse auflisten
+    \item Installierte Antivirenprogramme auflisten
+    \item Installierte Updates auflisten
+    \item Benutzer, Computer und Gruppen in der Domäne auflisten
+    \item Dateien und Registry lesen
+    \item Prozess erstellen (lokal oder remote)
+    \item RDP aktivieren (lokal oder remote)
 \end{itemize}
 
-\subsubsection{Explain how you filtered unsuccessful RDP login attempts}
-Um erfolglose RDP Login Versuche im Event Viewer zu suchen, sucht man nach der \lstinline|Event ID: 4625|.\\
-
+\subsubsection{PingCastle}
+Ping Castle ist ein Tool zur schnellen Bewertung des Sicherheitsniveaus von Active Directory mit einer Methodik, die auf einer Risikobewertung basiert. Hauptfeatures:
 \begin{itemize}
-    \item \lstinline|data.win.eventdata.logonType = 3| or \lstinline|data.win.eventdata.logonType = 10|
-    \item \lstinline|data.win.system.eventID = 4625| and \lstinline|data.win.eventdata.logonType = 3|
+    \item Health-check der Domäne
+    \item Kartographie der Domänen-Trusts
+    \item Scanner für verschiedene Einstellungen (LAPS, Lokale Admins, Shares, SMB, Spooler)
+\end{itemize}
+
+\subsection{AADDS: Azure Active Directory Domain Services}\label{subsec:aadds}
+\begin{itemize}
+    \item Cloud-Lösung von Microsoft
+    \item Gleiche Idee wie bei Active Directory vor Ort
+    \item Zentral verwaltete "Domäne" für Enterprise Admins
+    \item GPO nicht zu 100\% in Azure verfügbar
+    \item Richtlinie jetzt im Endpoint Manger Interface von Azure
+    \item Bedingte Zugriffskontrolle (MDM, Mobile Device Management)
+    \item verwendet OpenID Connect und SAML 2.0
+    \item SAML 2.0 wird in der Regel für Identitätsanbieter wie Active Directory Federation Services verwendet
 \end{itemize}
 
 \subsection{Kerberos}

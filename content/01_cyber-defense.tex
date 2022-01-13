@@ -9,6 +9,10 @@
 \subsection{Threat Actors}
 Die drei wichtigsten Threat Actors sind \textbf{Script Kiddies, Cyber-Kriminelle} sowie \textbf{APTs}.
 
+\begin{center}
+    \includegraphics[width=0.75\linewidth]{threat_actors}
+\end{center}
+
 \subsubsection{Script Kiddy}
 
 \begin{minipage}{0.5\linewidth}
@@ -46,8 +50,20 @@ Die drei wichtigsten Threat Actors sind \textbf{Script Kiddies, Cyber-Kriminelle
     \end{itemize}
 \end{minipage}
 
-\textbf{Script Kiddys} und \textbf{Hacktivisten} zielen primär auf direkt exponierte Systeme ab wie beispielsweise Webserver. Sie zeichnen sich dadurch aus, dass sie schnellstmöglich ihren «Smash and Grab-Erfolg» bekannt geben
-wollen. Sie dringen in den wenigsten Fällen über längere Zeit in Netzwerke ein.
+\subsubsection{Übersicht: Script Kiddy \& Hacktivisten}
+
+\begin{minipage}{0.5\linewidth}
+    \textbf{Motivation}
+    \begin{itemize}
+        \item \textbf{P0:} Erster eingenommener Server
+        \item \textbf{TD:} Ziel des Angreifers
+    \end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+    \includegraphics[width=\linewidth]{script_hacktivist}\\
+\end{minipage}
+
+\textbf{Script Kiddys} und \textbf{Hacktivisten} zielen primär auf direkt exponierte Systeme ab wie beispielsweise Webserver. Sie zeichnen sich dadurch aus, dass sie schnellstmöglich ihren «Smash and Grab-Erfolg» bekannt geben wollen. Sie dringen in den wenigsten Fällen über längere Zeit in Netzwerke ein.
 
 \subsubsection{Cyber-Kriminelle}
 
@@ -85,14 +101,32 @@ wollen. Sie dringen in den wenigsten Fällen über längere Zeit in Netzwerke ei
     \end{itemize}
 \end{minipage}
 
+\subsubsection{Übersicht: Cyper-Kriminelle \& Terroristen}
+
+\begin{minipage}{0.5\linewidth}
+    \textbf{Motivation}
+    \begin{itemize}
+        \item \textbf{P0:} Erster eingenommener Server
+        \item \textbf{TD:} Ziel des Angreifers
+        \item \textbf{LM:} Bewegung im Netzwerk
+        \item \textbf{P:} Hintertüre
+    \end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+    \includegraphics[width=\linewidth]{cyber_terrorists}\\
+\end{minipage}
+
 \textbf{Cyber-Kriminelle} benötigen eine erheblich lange Verweildauer in den Systemen, um an die gewünschten Daten zu kommen und stehen oftmals in ihren technischen Fähigkeiten vielen APTs in nichts nach. Der entscheidende
 Unterschied liegt jedoch in den strategischen Zielen dieser Akteure.
+
+\newpage
 
 \subsubsection{Advanced Persistent Threat (APT)}
 \begin{minipage}{0.5\linewidth}
     \textbf{Motivation}
     \begin{itemize}
-        \item Klare Mission, höhere, meist staatliche Ziele
+        \item Klare Mission
+        \item höhere, meist staatliche Ziele
         \item Spionage, politisch/ militärisch
         \item Sabotage, Schaden anrichten
         \item Sehr gezielt
@@ -110,12 +144,24 @@ Unterschied liegt jedoch in den strategischen Zielen dieser Akteure.
     \end{itemize}
 \end{minipage}
 
+\begin{minipage}{0.5\linewidth}
+    \textbf{Motivation}
+    \begin{itemize}
+        \item \textbf{P0:} Erster eingenommener Server
+        \item \textbf{TD:} Ziel des Angreifers
+        \item \textbf{LM:} Bewegung im Netzwerk
+        \item \textbf{P:} Hintertüre
+    \end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+    \includegraphics[width=\linewidth]{apt}\\
+\end{minipage}
+
 \textbf{APTs} verbleiben in den meisten Fällen \textcolor{red}{\textbf{sehr lange im Netzwerk}} des Opfers (in der Regel mehr als 200 Tage) und betreiben einen entsprechend hohen Aufwand, um ihren Zugang über mehrere Wege sicherzustellen. 
 \textbf{Deshalb sollte das gesamte Ausmass des Angriffs unbedingt erst verstanden sein bevor man einen APT Angriff stoppt.}
 
 \subsection{Angriffs Methoden}
-Sie verstehen die Denkweise der Angreifer und deren
-Methoden und Werkzeuge
+Sie verstehen die Denkweise der Angreifer und deren Methoden und Werkzeuge
 
 \begin{itemize}
     \item Direkte Attacken (Brute-Force)
@@ -125,5 +171,68 @@ Methoden und Werkzeuge
     \item APT and Data Exfiltration (C\&C Server, Agent, Zombie-Host)
     \item Social Engineering (Identitätsdiebstahl)
     \item MITRE ATT\&CK Framework
+\end{itemize}
+
+\subsection{Ablauf eines Angriffes}
+\begin{enumerate}
+    \item Initial Infection: Ein Client wird infiziert.
+    \item Es gibt noch keine Sicherheitslücke
+    \item Client kommuniziert mit Command \& Control Server über längere Zeit
+    \item Sobald ein Exploit bekannt ist, wird dieser ausgenutzt, bevor neuer Patch installiert wird
+\end{enumerate}
+
+\begin{center}
+    \vspace{-8pt}
+    \includegraphics[width=.7\linewidth]{apt_diagram}
+    \vspace{-8pt}
+\end{center}
+\begin{center}
+    \vspace{-8pt}
+    \includegraphics[width=.7\linewidth]{apt_process}
+    \vspace{-8pt}
+\end{center}
+
+\subsection{Methoden der Hacker}\label{subsec:methoden-der-hacker}
+
+\subsubsection{Direct Attack}
+\begin{itemize}
+    \item Brute-Force-Angriff
+    \item Angriff auf offene FW Ports
+\end{itemize}
+
+\subsubsection{Indirect Attack}
+\begin{itemize}
+    \item Virus
+    \item Malware
+    \item Ransomware
+\end{itemize}
+
+\subsubsection{Man-in-the-Middle Attack}
+%TODO: Reference to MITM Lecture
+\begin{itemize}
+    \item Im Netzwerk dazwischen schalten
+\end{itemize}
+
+\subsubsection{Man-in-the-Browser}
+%TODO: Reference to MITM Lecture
+\begin{itemize}
+    \item Direkt im Browser dazwischenschalten
+\end{itemize}
+
+\subsubsection{Privilege Elevation}
+\begin{itemize}
+    \item Rechte erhöhen, um diese auszunutzen
+\end{itemize}
+
+\subsubsection{APT and Data Exfiltration}
+\begin{itemize}
+    \item Komplexer Angriff
+    \item Command and Control Server
+    \item Zombie Host, welcher mit C\&C kommuniziert
+\end{itemize}
+
+\subsubsection{Social Engineering}
+\begin{itemize}
+    \item Identitätsdiebstahl
 \end{itemize}
 

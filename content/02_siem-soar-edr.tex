@@ -9,17 +9,148 @@
 \subsection{SIEM - Security Information and Event Management}
 Sicherheitsinformations- und Ereignisverwaltungslösungen sind für die Sammlung von Protokoll- und Ereignisdaten aus verschiedenen Quellen wie Netzwerken, Servern und Anwendungen sowie für die Aggregation, Identifizierung, kategorisieren und analysieren sie in Echtzeit.
 
-Mit einer SIEM-Lösung sollten Sicherheitsprobleme automatisch erkannt werden und die Möglichkeit bestehen, eine Warnung zu versenden.\\
+Mit einer SIEM-Lösung sollten Sicherheitsprobleme automatisch erkannt werden und die Möglichkeit bestehen, eine Warnung zu versenden.
 
+\subsubsection{Vorteile}
 \begin{itemize}
     \item Ermöglicht die Mustersuche in Protokolldaten nach Indikatoren für einen Cyberangriff (IOC)
     \item Ermöglicht die Korrelation von Ereignisinformationen und identifiziert abnormale Aktivitäten
     \item Alarme nach definierten Alarmregeln
-    \item \textbf{Splunk/ Wazuh} (open-source)
 \end{itemize}
 
-\subsubsection{Sigma}
-\textit{Sigma} ist ein generisches und offenes Signaturformat, mit dem Sie relevante Protokollereignisse auf einfache Weise beschreiben können. Das Regelformat ist sehr flexibel, leicht zu schreiben und auf jede Art von Protokolldatei anwendbar. Das Hauptziel dieses Projekts ist es, eine strukturierte Form bereitzustellen, in der Forscher oder Analysten ihre einmal entwickelten Erkennungsmethoden beschreiben und mit anderen teilen können.\\
+\subsubsection{Nachteile}
+\begin{itemize}
+    \item Kann sehr komplex sein
+    \item Implementierung kann lange dauern (hoher Aufwand)
+    \item oft kostspielig, da nicht direkt ,,out of the box``
+\end{itemize}
+
+\subsubsection{Anwendungen/ Hersteller}
+\begin{itemize}
+    \item Wazuh
+    \item Splunk
+    \item Exabeam
+\end{itemize}
+
+\subsection{SOAR - Security Orchestration, Automation and Response Solutions}
+SOAR sammelt ebenfalls Daten aus verschiedenen Quellen, ähnlich wie ein SIEM, aber SOAR unterstützt den Incident Responder bei der Bewältigung der Krise/ des Vorfalls.
+SOAR ermöglicht ein automatisiertes Eingreifen, wenn ein Sicherheitsvorfall eintritt. Ein SOAR-System unterstützt den Incident Responder auch bei der Einführung von Sicherheits Gegenmaßnahmen (Active Directory).
+
+\subsubsection{Vorteile}
+\begin{itemize}
+    \item Altert Investigation
+    \item Orchestration
+    \item Automatisierter Workflow: schnellere Reaktion bei Vorfällen und deren Behebung
+    \item höhere Produktivität
+    \item weniger langwierige und sich wiederholende Tätigkeiten für die Fachkräfte
+\end{itemize}
+
+\subsubsection{Nachteile}
+\begin{itemize}
+    \item Hat auf jedem Client hohe Rechte $\rightarrow$ kann auch angegriffen werden.
+    \item Kann die ,,Sicherheitsreife`` im Unternehmen nicht beurteilen oder Änderungen berücksichtigen
+    \item Wurde eine Sicherheitskultur nicht etabliert, helfen auch die Tools nicht
+    \item begrenzte oder unklare Erfolgsmetriken
+    \item Umschichtung von Personalressourcen auf Technologieressourcen
+\end{itemize}
+
+\subsubsection{Anwendungen/ Hersteller}
+\begin{itemize}
+    \item Velociraptor
+\end{itemize}
+
+\subsection{EDR - Endpoint Protection and Response}
+Endpoint Detection and Response (EDR), auch bekannt als Endpoint Threat Detection and Response (ETDR), ist eine integrierte Endpunkt-Sicherheitslösung, die eine kontinuierliche Überwachung und Erfassung von Endpunktdaten in Echtzeit mit regelbasierten automatischen Reaktions- und Analysefunktionen.
+
+EDR wird direkt auf dem Client installiert, SOAR auf einem Server im Netzwerk. Kann mit einem Antivirus Programm verglichen werden.
+
+\subsubsection{Vorteile}
+\begin{itemize}
+    \item Sehr nahe beim Client, daher so schnell
+\end{itemize}
+
+\subsubsection{Nachteile}
+\begin{itemize}
+    \item Beweisvernichtung
+    \item Benötigt Ressourcen auf dem Client
+    \item Benötigt hoche Rechte auf Client
+\end{itemize}
+
+\subsubsection{Anwendungen / Hersteller}
+\begin{itemize}
+    \item Microsoft
+    \item CrowdStrike
+    \item Trend Micro
+\end{itemize}
+
+\newpage
+
+\subsection{CERT - Computer Emergency Response Team}
+% TODO: More Information?
+% https://www.techtarget.com/searchsecurity/tip/CERT-vs-CSIRT-vs-SOC-Whats-the-difference
+\begin{itemize}
+    \item Trademark
+    \item Unpräzise
+\end{itemize}
+
+\subsection{CSIRT - Computer Emergency Security Incident Response Team}
+Ein \textit{CSIRT} ist ein Team von IT-Sicherheitsexperten, dessen Hauptaufgabe darin besteht, auf Computersicherheitsvorfälle zu reagieren.
+Es bietet die notwendigen Dienstleistungen an, um diese zu bearbeiten und die Betroffenen bei der Wiederherstellung nach Verstössen zu unterstützen.\\
+
+\begin{itemize}
+    \item Präziser
+    \item Free to use
+    \item 19 Teams in CH\\
+\end{itemize}
+
+\textit{CSIRT} wird oft als synonym zu \textit{CERT} verwendet.
+
+\subsection{SOC}
+Der Aufgabenbereich eines SOC kann sowohl Incident Response (ganz oder teilweise) als auch andere Aufgaben umfassen, z.B.:
+
+\begin{itemize}
+    \item Überwachung von Abläufen und Kontrollen (z.B. Intrusion Detection / Intrusion Prevention System, etc.)
+    \item die Auswertung von Betriebs- und Sicherheitstelemetrie und Informationserfassung beaufsichtigen
+    \item Verwaltung von Aufgaben wie Identitätsmanagement und Autorisierung, Wartung von Firewall- und Filterregeln (sowohl Überprüfung als auch Änderungsverwaltung)
+    \item forensische und investigative Unterstützung oder andere Aspekte der operativen Sicherheit.
+\end{itemize}
+
+\begin{center}
+    \vspace{-8pt}
+    \includegraphics[width=0.8\linewidth]{soc_cert_csirt}
+    \vspace{-8pt}
+\end{center}
+
+\newpage
+
+\subsection{IOC: Indices of Compromize}
+Indicators of Compromise (IOCs) definieren die Merkmale eines Vorfalls auf strukturierte Weise. Sie haben das Ziel, Artefakte im Zusammenhang mit Vorfällen zu beschreiben und zu finden.\\
+
+\textbf{Format:}
+\begin{itemize}
+    \item Host-basierte IOC-Formate (noch kein akzeptierter Standard)
+    \item 
+    \begin{itemize}
+        \item YARA
+        \item STIX, TAXII
+        \item Mandiant's OpenIOX
+    \end{itemize}
+
+    \item Netzbasierte IOC-Formate
+    \begin{itemize}
+        \item Snort rules
+    \end{itemize}
+\end{itemize}
+
+\subsection{Incident Response}
+% TODO: Include content here or somwhere else?
+% NIST
+% SANS
+
+\subsection{Sigma}
+\textit{Sigma} ist ein generisches und offenes Signaturformat, mit dem Sie relevante Protokollereignisse auf einfache Weise beschreiben können.
+Das Regelformat ist sehr flexibel, leicht zu schreiben und auf jede Art von Protokolldatei anwendbar.
+Das Hauptziel dieses Projekts ist es, eine strukturierte Form bereitzustellen, in der Forscher oder Analysten ihre einmal entwickelten Erkennungsmethoden beschreiben und mit anderen teilen können.\\
 
 \textit{Sigma} ist für Protokolldateien das, was Snort für den Netzwerkverkehr und YARA für Dateien ist.\\
 
@@ -31,35 +162,3 @@ Mit einer SIEM-Lösung sollten Sicherheitsprobleme automatisch erkannt werden un
     \item Share the signature in threat intel communities - e.g. via MISP
     \item Provide Sigma signatures for malicious behaviour in your own application
 \end{itemize}
-
-\subsection{SOAR - Security Orchestration, Automation and Response Solutions}
-SOAR sammelt ebenfalls Daten aus verschiedenen Quellen, ähnlich wie ein SIEM, aber SOAR unterstützt den Incident Responder bei der Bewältigung der Krise. SOAR ermöglicht ein automatisiertes Eingreifen, wenn ein Sicherheitsvorfall eintritt. Ein SOAR-System unterstützt den Incident Responder auch bei der Einführung von Sicherheits Gegenmaßnahmen (Active Directory).\\
-
-\begin{itemize}
-    \item Altert Investigation
-    \item Orchestration
-    \item Automation workflow
-    \item \textbf{Velociraptor}
-\end{itemize}
-
-\subsection{EDR - Endpoint Protection and Response}
-Endpoint Detection and Response (EDR), auch bekannt als Endpoint Threat Detection and Response (ETDR), ist eine integrierte Endpunkt-Sicherheitslösung, die eine kontinuierliche Überwachung und Erfassung von Endpunktdaten in Echtzeit mit regelbasierten automatischen Reaktions- und Analysefunktionen
-
-\newpage
-
-\subsection{CERT - Computer Emergency Response Team}
-\begin{itemize}
-    \item Trademark
-    \item Imprecise
-\end{itemize}
-
-\subsection{CSIRT - Computer Emergency Security Incident Response Team}
-A \textit{CSIRT} is a team of IT security experts whose main business is to respond to computer security incidents. It provides the necessary services to handle them and support their constituents to
-recover from breaches.\\
-
-\begin{itemize}
-    \item More precise
-    \item Free to use\\
-\end{itemize}
-
-However, the terms \textit{CERT} and \textit{CSIRT} are used synonymously in daily life.
