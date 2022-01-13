@@ -24,35 +24,33 @@ Mit SPF können Absender festlegen, welche IP-Adressen E-Mails für eine bestimm
 \subsubsection{Ablauf}
 Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ein Mail verschicken darf.\\
 \begin{itemize}
-    \item \textcolor{OSTPink}{\textbf{MTA}} (violett) macht \textbf{DNS-Lookup} (schwarz) und fragt diesen an, welche IPs berechtig sind Mails zu versenden.\\
-\end{itemize}
-\begin{enumerate}
-    \item IP-$\alpha$ (TCP) $\rightarrow$ DNS-Lookup $\rightarrow$ SPF@ost.ch
-    \begin{enumerate}
+    \item \textcolor{OSTPink}{\textbf{MTA}} (violett) macht \textbf{DNS-Lookup} (schwarz) und fragt diesen an, welche IPs berechtig sind Mails zu versenden.
+    \begin{itemize}
+        \item IP-$\alpha$ (TCP) $\rightarrow$ DNS-Lookup $\rightarrow$ SPF@ost.ch
         \item Falls $\alpha$ darin enthalten $\rightarrow$ ok\\
-    \end{enumerate}
-\end{enumerate}
+    \end{itemize}
+\end{itemize}
 
 Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert hat. Empfänger-MTA interessiert das nicht.
 
 \textit{SPF} ist besonders effizient gegen \textcolor{OSTPink}{\textbf{Phishing-Angriffe}}.
 
-\subsection{\textcolor{cyan}{DKIM - DomainKeys Identified Mail}}
-\textit{DKIM} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.\\
+\subsection{DKIM - DomainKeys Identified Mail}
+\textcolor{cyan}{\textbf{DKIM}} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.
 
 \subsubsection{Ablauf}
 \begin{itemize}
     \item Mailserver signiert mail mit private Key
-    \item Mail kommt beim \textcolor{OSTPink}{MTA} an und dieser prüft ob Mail signiert ist
+    \item Mail kommt beim \textcolor{OSTPink}{\textbf{MTA}} an und dieser prüft ob Mail signiert ist
     \begin{itemize}
-        \item Wenn Signatur vorhanden $\rightarrow$ DNS-lookup (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des \textbf{DNS Servers}\\
+        \item Wenn Signatur vorhanden $\rightarrow$ \textbf{DNS-lookup} (DNS schwarz) für public key $\rightarrow$ prüft Signatur von Mail mit dem public key des \textbf{DNS Servers}\\
     \end{itemize}
 \end{itemize}
 
-\textit{DKIM} ist besonders effizient gegen \textcolor{OSTPink}{\textbf{Man-in-the-middle-Angriffe}}.
+\textit{DKIM} ist besonders effizient gegen \textcolor{OSTPink}{\textbf{Man-in-the-middle-Angriffen}}.
 
 \subsection{DMARC - Domain-based Message Authentication, Reporting and Cornformance}
-\textit{DMARC} vereinheitlicht die \textit{SPF}- und \textit{DKIM}-Authentifizierungsmechanismen in einem gemeinsamen Rahmen und ermöglicht es den Inhabern von Domänen, zu erklären, wie sie möchten, dass E-Mails von dieser Domäne behandelt werden, wenn sie einen Autorisierungstest nicht besteht.
+\textit{DMARC} prüft, ob die SPF sowie DKIM Checks erfüllt werden. Nun können Regeln definiert werden, die bei nicht-bestehen der Checks angewendet werden. Das kann z.B. das rejecten des Mails, in Quarantäne stellen oder das Verschieben in den Spamordner sein.
 
 \newpage
 
