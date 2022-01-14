@@ -9,12 +9,7 @@ DKIM, SPF und DMARC sind Standards, die verschiedene Aspekte der E-Mail-Authenti
 
 \begin{center}
     \includegraphics[width=.8\linewidth]{overview}
-\end{center}
-
-\newpage
-
-\begin{center}
-    \includegraphics[width=0.9\linewidth]{spf_overview}
+    \includegraphics[trim=0 0 0 -1cm, width=0.9\linewidth]{spf_overview}
 \end{center}
 
 \subsection{SPF - Sender Policy Framework}
@@ -37,6 +32,7 @@ Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert 
 
 \subsection{DKIM - DomainKeys Identified Mail}
 \textcolor{cyan}{\textbf{DKIM}} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.
+DKIM fügt dazu dem E-Mail Header eine digitale Signatur hinzu, welche vom Empfänger mit dem \textit{Public Key} (welcher auf dem DNS Server gespeichert ist) validiert werden kann.
 
 \subsubsection{Ablauf}
 \begin{itemize}
@@ -51,6 +47,7 @@ Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert 
 
 \subsection{DMARC - Domain-based Message Authentication, Reporting and Cornformance}
 \textit{DMARC} prüft, ob die SPF sowie DKIM Checks erfüllt werden. Nun können Regeln definiert werden, die bei nicht-bestehen der Checks angewendet werden. Das kann z.B. das rejecten des Mails, in Quarantäne stellen oder das Verschieben in den Spamordner sein.
+Policies werden im DNS als TXT-Einträge veröffentlicht und geben an, was ein E-Mail-Empfänger mit E-Mails mit nicht-bestandenen Checks tun soll, die er erhält
 
 \newpage
 

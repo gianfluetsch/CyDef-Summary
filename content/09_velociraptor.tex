@@ -5,11 +5,42 @@
 %! Project = cydef_summary
 
 \section{Velociraptor}
+Use Velociraptor to collect evidence, hunt for IOCs or just to monitor for something to happen. For that purpose, there are different kinds of client and server artifacts (scripts to collect stuff) some general and some that trigger on events which you could use for
+monitoring.\\
+
 Velociraptor is a free and open-source software project developed by the Velocidex Company. Velociraptor is generally based on GRR, OSQuery, and Google's Rekall tools. Velociraptor allows users to collect Forensics Evidence, Threat Hunting, Monitoring artifacts, Executing remote triage process. As an open-source platform, Velociraptor continues to improve and evolve through inputs and feedback of digital forensics investigation and cybersecurity practitioner
 
 Velociraptor was released in 2019 and allows for hunting across many thousands of machines. Inspired by OSQuery, Velociraptor implements a new query language dubbed \textit{VQL} (Velociraptor Query Language) which is similar to SQL but extends the query language in a more powerful way. Velociraptor also emphasizes ease of installation and very low latency — typically collecting artifacts from thousands of endpoints in a matter of seconds.
 
 \subsection{Introduction}
+
+\subsubsection{Terminology}
+\begin{itemize}
+    \item \textbf{File}
+    \begin{itemize}
+        \item  File system access based on OS FS API
+    \end{itemize}
+    \item \textbf{NTFS}
+    \begin{itemize}
+        \item NTFS raw parsing filesystem access
+    \end{itemize}
+    \item \textbf{Registry}
+    \begin{itemize}
+        \item Windows Registry access using the Registry API
+    \end{itemize}
+    \item \textbf{Artifacts}
+    \begin{itemize}
+        \item Artifacts collected from the client incl. type and time in Velociraptor Artifacts are commands and scripts that actually grab some data (we usually call these artifacts) from clients. Structured in YAML
+    \end{itemize}
+    \item \textbf{VQL}
+    \begin{itemize}
+        \item Velociraptor Query Language
+    \end{itemize}
+    \item \textbf{Hunting}
+    \begin{itemize}
+        \item enables you to collect the same artifacts over an entire fleet
+    \end{itemize}
+\end{itemize}
 
 \subsubsection{Registry Search}
 Velociraptor can be used to search the registry of a client in several ways
@@ -25,6 +56,8 @@ Like the \textit{raw\_reg} accessor, the zip accessor also requires a url. Here 
 \begin{lstlisting}[language=bash]
     SELECT * FROM glob(globs=url(scheme='ntfs', path='C:/Users/Bob/Desktop/images.zip', fragment='/**/*.jpg').String, accessor='zip')
 \end{lstlisting}
+
+\newpage
 
 \subsubsection{Notebook - foreach}
 To not only do this for the current user but all users, you have to use a \textit{foreach} plugin.
@@ -45,8 +78,6 @@ This includes for example querying the registry (\lstinline|Windows.Registry.NTU
 \subsubsection{YARA Artifact}
 You might have to use a foreach loop again where the rows statement gives you the PIDs and names of all processes and then scan for the YARA signature in the query block.
 
-\newpage
-
 \subsection{Lateral Movement}
 Lateral movement means to move within the internal network to access the organization's target data and to exfiltrate the data. In this challenge you will solve tasks to detect lateral movement using Velociraptor.
 
@@ -64,3 +95,72 @@ As you will see in the result of Artifact \lstinline|Windows.EventLogs.Alternate
 
 \subsubsection{Detection Mimikatz}
 Now you have collected some evidence that someone did misuse \textit{PsExec} for passing the hash. But to dump the hash from a node, you need a tool. One such tool is Mimikatz. Use the \lstinline|Windows.System.Amcache| Artifact to detect if Mimikatz was executed on the system.
+
+\newpage
+
+\section{Incident Response}
+
+\subsection{Computer Security Incident}
+\textbf{Definition}:
+\begin{itemize}
+    \item intent to cause harm
+    \item involves a computing resource
+    \item usually performed by a person\\
+\end{itemize}
+
+\textbf{Examples}:
+\begin{itemize}
+    \item data theft including sensitive information
+    \item theft of funds, C\&C and wire fraud
+    \item extortion
+    \item unauthorized access
+    \item presence of malware
+    \item possession of unauth or illegal material\\
+\end{itemize}
+$\rightarrow$ Events are usually hick-ups and misconfigurations
+
+\subsection{Industry Standard Processes}
+\subsubsection{NIST}
+\begin{enumerate}
+    \item Preparation
+    \begin{enumerate}
+        \item ensure systems are secure
+        \item develop an incident response plan
+        \item train employees
+        \item develop incident response scenarios and conduct trainings
+        \item monitor traffic patterns and create baselines for later comparison
+        \item create a communication plan
+    \end{enumerate}
+    \item Detection and Analysis
+    \begin{itemize}
+        \item gather everything you can on the incident $\rightarrow$ then analyze it
+        \item understand normal behaviour $\rightarrow$ focus on abnomalies
+        \item prioritizing the handling of the incident
+        \item detect all compromised systems first
+        \item start recording all facts regarding the incident
+        \item push tools / enable additional logging on hosts
+        \item gather intelligense on the adversary
+    \end{itemize}
+    \item Containment, Eradication and Recovery
+    \begin{enumerate}
+        \item choosing a containment strategy based on type of incident $\rightarrow$ avoid pulling the plug, use adversary network segmentation
+        \item Eliminate components of incident $\rightarrow$ delete malware an persistence, disabled breached accounts, be quick and plan well
+        \item return to normal business operation, implement supplement measures, initiate larger project (segmentation, 2FA)
+    \end{enumerate}
+    \item Post Incident Activity
+\end{enumerate}
+
+\subsubsection{SANS}
+\begin{enumerate}
+    \item Preparation
+    \item Identification and Scoping
+    \item Containment / Inteligence Development
+    \item Eradication / Remediation
+    \item Recovery
+    \item Lessons Learned / Threat Intel Consumption
+\end{enumerate}
+
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{sans_picerl}
+    \vspace{-8pt}
+\end{center}

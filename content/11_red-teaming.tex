@@ -5,6 +5,42 @@
 %! Project = cydef_summary
 
 \section{Red Teaming}
+Red Team führt realitätsnahe Cyber-Angriffe gegen Kunden Infrastruktur und Dienste durch. Es versetzt sich in die \textbf{Denk} und \textbf{Handlungsweise} eines Gegners, um dadurch \textbf{neue Erkenntnisse} über die \textbf{eigenen Schwächen} zu erlangen und \textbf{mitigierende Massnahmen} einleiten zu können.
+
+\subsection{Audit/Pen Testing vs. Red Teaming}
+\begin{itemize}
+    \item Beim \textbf{Pen-Testing} ist der Fokus mehr auf einem spezifischen System/ Komponenten
+    \begin{itemize}
+        \item Gain \textbf{overview} of vulnerabilities
+        \item Scope \& budget \textbf{depend on project}
+        \item Focus on \textbf{efficiency} (no exploitation)
+        \item Part of \textbf{secure development lifecycle}\\
+    \end{itemize}
+    \item Beim \textbf{Red Teaming} ist man freier und versucht verschiedene Systeme anzugreifen und via Lateral Movement von einem System auf ein anderes zu kommen (höchstes Ziel $\rightarrow$ Active Directory)
+    \begin{itemize}
+        \item Test \textbf{resilience} (Wiederstandsfähigkeit) agains real attacks
+        \item \textbf{Independent} and adaptable attacks
+        \item Focus on \textbf{crown jewels} (exploitation)
+        \item Periodical cases, ad-hoc
+    \end{itemize}
+\end{itemize}
+
+\subsection{Blue Teaming vs. Red Teaming}
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{blue_red}
+    \vspace{-8pt}
+\end{center}
+
+\subsection{Code of Conduct}
+\begin{itemize}
+    \item keine absichtlichen Störungen (Down Times) oder SLA Impact herbeiführen
+    \item kein absichtlicher Zugriff (lesend oder verändernd) auf Kundendaten
+    \item keine absichtlichen destruktiven Aktionen durchführen
+    \item bestehende Sicherheitsmassnahmen werden nicht geschwächt oder ausser Betrieb genommen
+    \item Findings werden geschützt und nur mit Personen geteilt die ein need to know haben
+\end{itemize}
+
+\newpage
 
 \subsection{Step 1: Host \& Service Discovery}
 Das Netzwerk soll gescannt werden, dass man weiss was im Netz ummen ist, wselche Ports offen sind, Hostnames.

@@ -48,13 +48,13 @@ ein Thread-Token (um andere Token in Client/Server-Szenarien zu verkörpern)\\
 
 \textbf{Impersonating Levels}:
 \begin{itemize}
-    \item Anonymous\\
+    \item \textbf{Anonymous}\\
     Entfernter Server kann einen Client nicht identifizieren, der Thread agiert als anonymer Benutzer.
-    \item Identification\\
+    \item \textbf{Identification}\\
     Entfernte Server kann den Benutzer identifizieren, aber nicht ,,impersonaten``
-    \item Impersonation\\
+    \item \textbf{Impersonation}\\
     Der entfernte Server kann den Client über eine Computergrenze hinweg identifizieren und sich als dieser ausgeben (Netzwerkanmeldung beim Server)
-    \item Delegation\\
+    \item \textbf{Delegation}\\
     Der Server kann sich über mehrere Grenzen hinweg als Client ausgeben und Anrufe im Namen des Clients tätigen (bekannt als Kerberos ,,double hop``)\\
 \end{itemize}
 
@@ -74,6 +74,7 @@ Mimikatz kann mit existierenden Prozess und Thread Token interagieren:
 \subsubsection{Douple-Hop Problem}
 Wenn Code mit WMI oder WinRM aus der Ferne ausgeführt wird, erhalten man ein Token, das an eine Network Logon Session gebunden ist $\rightarrow$ Anmeldeinformationen werden nicht tatsächlich an den Remote-Host gesendet.\\
 Von diesem kompromittierten Host aus kann man sich \underline{nicht bei anderen Ressourcen im Netzwerk authentifizieren}!\\
+
 \textbf{Workaround:}
 \begin{itemize}
     \item Anderes Token verwenden, das auf eine Non-Network Logon Session verweist:
@@ -125,9 +126,6 @@ Thread/Process $\rightarrow$ Token $\rightarrow$ Logon Session $\rightarrow$ Aut
     \item Verlässt sich auf Datenreplikationsfunktionen zwischen mehreren Domänencontrollern über Microsoft Directory Replikationsdienst-Remote-Protokoll (MS-DRSR)
     \item Erfordert bestimmte Berechtigungen (standardmässig nur Domänenadministratoren und Domänencontroller)
 \end{itemize}
-
-\subsection{Cobalt Strike}
-%TODO: What is cobalt strike?
 
 \subsection{DPAPI}
 Die data protection API (DPAPI) bietet eine Reihe von API-Aufrufen (CryptProtectData / CryptUnprotectData), die es Anwendungen ermöglichen, Daten-"Blobs" auf einem System zu verschlüsseln/entschlüsseln

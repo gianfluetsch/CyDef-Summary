@@ -6,6 +6,42 @@
 
 \section{Windows Logs}
 
+\subsection{TLP (Traffic Light Protocol)}
+\begin{itemize}
+    \item RED $\rightarrow$ Infos sind auf den \textbf{Kreis der Anwesenden} beschränkt $\rightarrow$ Weitergabe ist untersagt
+    \item Amber $\rightarrow$ infos darf der Empfänger \textbf{innerhalb seiner Organisation} aus Basis “Kenntnis \textbf{nur wenn nötig}” weitergeben
+    \item Green $\rightarrow$ infos dürfen \textbf{innerhalb der Organisation} und an deren Partner weitergegeben, aber \textbf{nicht veröffentlicht} werden
+    \item White (default) $\rightarrow$ abgesehen von \textbf{urheberrechtlichen Aspekten} dürfen die Infos \textbf{ohne Einschränkungen} weitergegeben werden
+\end{itemize}
+
+\subsection{Event Log Categories}
+\begin{itemize}
+    \item \textbf{Security.evtx}
+    \begin{itemize}
+        \item access control and seucrity information
+        \item only written by \textit{LSASS} process
+        \item \glqq Security Event Log\grqq is most important for cyber defense
+        \item System events, logon, account, privilege used, account management, object access, directory service, process tracking
+    \end{itemize}
+    \item \textbf{System.evtx}
+    \begin{itemize}
+        \item windows system events (driver, service, ressources)
+    \end{itemize}
+    \item \textbf{Application.evtx}
+    \begin{itemize}
+        \item non system related software events
+    \end{itemize}
+    \item \textbf{<Custom>.evtx}
+    \begin{itemize}
+        \item around 150 different custom application logs
+    \end{itemize}
+\end{itemize}
+
+\subsection{LSASS Process}
+\begin{itemize}
+    \item responsible for enforcing the security policy on the system
+\end{itemize}
+
 \subsection{Logging}
 Über eine GPO kann ein Logging-Agent (z.B. der Wazuh-Agent) einfach auf allen gewünschten Servern installiert und konfiguriert werden.
 Diesen Agent sollte man so konfigurieren, dass er alle wichtigen und relevanten Logs (z.B. die RDP Logs) ebenfalls an Wazuh weiterleitet.

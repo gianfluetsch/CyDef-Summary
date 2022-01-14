@@ -70,12 +70,45 @@ Client $\rightarrow$ WAF $\rightarrow$ APP $\rightarrow$ API $\rightarrow$ DB
 
 \subsection{MitM}
 
-\subsubsection{Unverschlüsselte Kommunikation}
-\begin{enumerate}
-    \item Lesen aller Daten (PW, Kreditkarte, Mail)
-    \item Manipulieren aller Daten
-    \item Drop (DoS)\\
-\end{enumerate}
+\subsubsection{becoming a MitM}
+\begin{itemize}
+    \item MitM with Rogue 2G, 3G, 4G, 5G antenna (IMSI catcher)
+    \item physical access to network
+    \begin{itemize}
+        \item mobile network, ISP
+    \end{itemize}
+    \item WIFI MitM
+    \begin{itemize}
+        \item e.g. free wifi at coffee shop, rogue AP
+    \end{itemize}
+    \item NFC MitM (NFC Relaying Attack)
+    \item MitM Bluetooth
+    \item MitM Redirecting (Request Forgery $\rightarrow$ DNS change)
+\end{itemize}
+
+\subsubsection{ARP spoofing LAN}
+\begin{itemize}
+    \item switch sends package to attacker because of ARP spoofing
+\end{itemize}
+
+\subsubsection{DHCP poisoning}
+If an attacker answers faster to a dhcp request from a client, the client will reject the response from the true dhcp server possible with python and scapy library or metasploit
+
+
+\subsubsection{MitM attacks}
+\paragraph{Unverschlüsselte Kommunikation}
+\begin{itemize}
+    \item dns, http, dhcp, telnet, arp, snmp, smtp, etc.
+    \item passive
+    \begin{itemize}
+        \item Lesen aller Daten (PW, Kreditkarte, Mail)
+    \end{itemize}
+    \item intercepting
+    \begin{itemize}
+        \item Manipulieren aller Daten
+        \item Drop (DoS)\\
+    \end{itemize}
+\end{itemize}
 
 \textbf{Strategien}:
 \begin{itemize}
@@ -83,16 +116,106 @@ Client $\rightarrow$ WAF $\rightarrow$ APP $\rightarrow$ API $\rightarrow$ DB
     \item Redirect to malicious service
 \end{itemize}
 
-\subsubsection{Verschlüsselte Kommunikation}
+\paragraph{Verschlüsselte Kommunikation}
 \begin{enumerate}
-    \item Terminate Service (Interception) $\rightarrow$ \textit{CertWarning}
-    \item Downgrade (HTTPS $\rightarrow$ HTTP/ TLS Version Downgrade)
-    \item Mit unverschlüsseltem Content den verschlüsselten Schwächen
-    \item Replay Angriffe
-    \item DoS
+    \item intercepting
+    \begin{itemize}
+        \item Terminate Service (Interception) $\rightarrow$ \textit{CertWarning}
+        \item DoS
+    \end{itemize}
+    \item redirecting
+    \begin{itemize}
+        \item Downgrade (HTTPS $\rightarrow$ HTTP/ TLS Version Downgrade)
+        \item Mit unverschlüsseltem Content den verschlüsselten Schwächen
+        \item Replay Angriffe
+    \end{itemize}
 \end{enumerate}
 
-\subsection{Forensic Readiness Apache Reverse Proxy}
+\subsubsection{MITM HTTPS}
+\paragraph{Offline Phishing}\mbox{} \\
+encrypted traffic $\rightarrow$ user enters username, password on fake attacker site (with https) and the attacker then uses the credential to login on the original server mail with links to malicious sites\\
+
+\textbf{Mitigation}:
+\begin{itemize}
+    \item User Awareness Training
+    \item 2FA
+    \item Monitoring and blocking malicious domains
+\end{itemize}
+
+\paragraph{Online Phishing}\mbox{} \\
+User connects to hacker site and hacker forwards information to original server, but can listens everything, despite https $\rightarrow$ 2FA does not help here\\
+
+\textbf{Mitigation}:
+\begin{itemize}
+    \item use HSTS (http strict transport security) $\rightarrow$ save HSTS header on client locally
+    \item SSL TLS \& Mutual Authentication with certificates
+    \item FIDO2
+\end{itemize}
+
+\subsubsection{MitM SSH}
+\begin{itemize}
+    \item victim is presented with \textbf{host key mismatch warning}
+    \item better than password and username $\rightarrow$ certificates
+    \item 2FA \textbf{does not prevent MitM} $\rightarrow$ only public private key prevents mitm
+\end{itemize}
+
+\subsubsection{RDP MitM}
+RDP encrypted by default with RC4 (symetric key) $\rightarrow$ PyRDP is a pyhton library for RDP MITM
+\begin{itemize}
+    \item RDP MITM, RDP Player, RDP Certificate Cloner
+\end{itemize}
+$\rightarrow$ \textbf{Fazit: NLA (Network Level Authentication) Protection is safe!!}
+
+\subsection{FIDO2}
+\subsubsection{Authentication Factors}
+\begin{itemize}
+    \item to know something (password, pin)
+    \item to own something (smartcard, secureID, safeword, OTP)
+    \item to be something (fingerprint, iris, voice, face)
+\end{itemize}
+\textbf{$\rightarrow$ most 2FA mechanisms do not protect against credential phishing}
+
+\subsubsection{FIDO (Fast Identity Online)}
+\textbf{FIDO2 Building Blocks}:\\
+$Authenticatior \leftrightarrow Client \leftrightarrow Pelying Party$
+
+\paragraph{FIDO2 Authenticators}
+\begin{itemize}
+    \item Windows Hello, USB Key
+\end{itemize}
+
+\paragraph{FIDO2 Clients}
+\begin{itemize}
+    \item Windows, Android, Chrome, Firefox, Edge, Safari
+\end{itemize}
+
+\paragraph{FIDO2 Relying Parties}
+\begin{itemize}
+    \item Apple, Google, Microsoft, GitHub, Ebay, etc.
+\end{itemize}
+
+\subsubsection{Client to Authenticator Protocol (CTAP)}
+\begin{itemize}
+    \item USB human interface device (USB HID)
+    \item NFC
+    \item Bluetooth
+\end{itemize}
+
+\subsubsection{Password Less Authentication}
+\begin{itemize}
+    \item with Pin and biometric unlock authenticator $\rightarrow$ authenticator then unlocks the rest
+\end{itemize}
+
+\subsubsection{Conclusion}
+Traditional authentication mechanisms are not sufficient anymore $\rightarrow$ inconvenient and not resistant to phishing $\rightarrow$ \textbf{FIDO2}
+\begin{itemize}
+    \item phsishing resistant authentication protocol
+    \item simple to use
+    \item has strong platform \& industry support
+\end{itemize}
+
+
+\subsection{Forensic Readiness Apache Reverse Proxy (Lab)}
 Distributed systems, and those using microservices architectures in particular, scatter the order's log messages further, across multiple locations, to be gathered by centralised logging tools. To make it straightforward to investigate problems, you need a way to group the log messages that relate to a particular order, in all of your systems or services.
 
 \subsubsection{Unique-ID}
@@ -109,7 +232,7 @@ By adding the \textit{UNIQUE\_ID} into the following Request Header towards to b
 
 \newpage
 
-\subsection{HTTP and HTTPS MitM Apache Reverse Proxy}
+\subsection{HTTP and HTTPS MitM Apache Reverse Proxy (Lab)}
 This exercise is explaining the so-called online phishing attack. We want to learn how to setup http/https listener, that is forwarding everything to the target webserver. We want to create a \textit{http} and \textit{https} listener and both shall forward to the backend system.
 The reverse proxy can be used to forward all traffic to another apache instance within the same docker container.
 

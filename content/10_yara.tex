@@ -5,7 +5,7 @@
 %! Project = cydef_summary
 
 \section{Yara}
-YARA ist ein Tool, das Malware-Forschern bei der Identifizierung und Klassifizierung von Malware-Mustern helfen soll (aber nicht darauf beschränkt ist). Mit YARA können Sie Beschreibungen von Malware-Familien (oder was auch immer Sie beschreiben möchten) auf der Grundlage von textuellen oder binären Mustern erstellen. Jede Beschreibung, auch als Regel bezeichnet, besteht aus einer Reihe von Zeichenketten und einem booleschen Ausdruck, die ihre Logik bestimmen
+YARA (Yet Another Recursive/ Ridiculous Acronym) ist ein Tool, das Malware-Forschern bei der Identifizierung und Klassifizierung von Malware-Mustern helfen soll (aber nicht darauf beschränkt ist). Mit YARA können Sie Beschreibungen von Malware-Familien (oder was auch immer Sie beschreiben möchten) auf der Grundlage von textuellen oder binären Mustern erstellen. Jede Beschreibung, auch als Regel bezeichnet, besteht aus einer Reihe von Zeichenketten und einem booleschen Ausdruck, die ihre Logik bestimmen
 
 \subsection{Yara and yarGen}
 
@@ -16,6 +16,21 @@ YARA ist ein Tool, das Malware-Forschern bei der Identifizierung und Klassifizie
 \textit{yarGen} is a generator for YARA rules
 
 The main principle is the creation of yara rules from strings found in malware files while removing all strings that also appear in goodware files. Therefore \textit{yarGen} includes a big goodware strings and opcode database as ZIP archives that have to be extracted before the first use.
+
+\subsection{Examples}
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{yara_example}
+    \vspace{-8pt}
+    \includegraphics[width=0.8\linewidth]{yara_example2}
+    \vspace{-8pt}
+    \includegraphics[width=0.8\linewidth]{yara_example3}
+\end{center}
+
+Wenn mit yara gesucht wird, \textbf{matcht eine "private rule" NIE!}
+\begin{itemize}
+    \item sondern immer nur die globale rule (in diesem Bsp "foo")
+    \item in der globale rule "foo" kann als condition aber die private rule (WindowsPE) hinterlegt werden!
+\end{itemize}
 
 \subsection{tcpdump and Yara}
 
