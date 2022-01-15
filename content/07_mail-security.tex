@@ -8,13 +8,15 @@
 DKIM, SPF und DMARC sind Standards, die verschiedene Aspekte der E-Mail-Authentifizierung ermöglichen.
 
 \begin{center}
-    \includegraphics[width=.8\linewidth]{overview}
+    \includegraphics[width=.7\linewidth]{overview}
     \includegraphics[trim=0 0 0 -1cm, width=0.9\linewidth]{spf_overview}
 \end{center}
 
 \subsection{SPF - Sender Policy Framework}
 
 Mit SPF können Absender festlegen, welche IP-Adressen E-Mails für eine bestimmte Domäne senden dürfen.
+DNS TXT-Entry mit allen IP-Ranges, von welchen ein Mail mit dieser Domain verschickt werden darf.
+Alles was nicht von den outgoing Mail/MX Servern stammt, ist ''Fake''und wird in Spam verschoben oder gar nicht erst zugestellt.
 
 \subsubsection{Ablauf}
 Auf dem \textbf{DNS} (schwarz) kann eingegrenzt werden, wer (welche IP) alles ein Mail verschicken darf.\\
@@ -32,7 +34,13 @@ Wenn Empfänger SPF-Policy nicht enforced, ist egal was der Sender konfiguriert 
 
 \subsection{DKIM - DomainKeys Identified Mail}
 \textcolor{cyan}{\textbf{DKIM}} stellt einen Encryption Key und eine digitale Signatur bereit, die nachweisen, dass eine E-Mail-Nachricht nicht gefälscht oder verändert wurde.
-DKIM fügt dazu dem E-Mail Header eine digitale Signatur hinzu, welche vom Empfänger mit dem \textit{Public Key} (welcher auf dem DNS Server gespeichert ist) validiert werden kann.
+DKIM fügt dazu dem E-Mail Header eine digitale Signatur hinzu, welche vom Empfänger mit dem \textit{Public Key} (welcher auf dem DNS Server gespeichert ist) validiert werden kann.\\
+
+Der Mail-Server hat ein Public/Private Key Cert Pair. Der Public Key wird via weltweit verfügbaren DNS veröffentlicht. 
+Der Plaintext in einem Mail wird gehasht und im Header gespeichert. 
+Der Header wird wieder mit dem Private Key signiert (also inkl. dem Hash des Plain Texts). 
+Empfänger Mail-Server kann nun mit dem öffentlich verfügbaren Public Key feststellen, ob der Sender der ist der er angibt (Korrekte Firma mit Zugriff auf Private/Public Pair). 
+Durch das Signieren ist auch klar, dass der Content ''in Transit'' nicht verändert wurde.
 
 \subsubsection{Ablauf}
 \begin{itemize}
@@ -47,7 +55,11 @@ DKIM fügt dazu dem E-Mail Header eine digitale Signatur hinzu, welche vom Empf�
 
 \subsection{DMARC - Domain-based Message Authentication, Reporting and Cornformance}
 \textit{DMARC} prüft, ob die SPF sowie DKIM Checks erfüllt werden. Nun können Regeln definiert werden, die bei nicht-bestehen der Checks angewendet werden. Das kann z.B. das rejecten des Mails, in Quarantäne stellen oder das Verschieben in den Spamordner sein.
-Policies werden im DNS als TXT-Einträge veröffentlicht und geben an, was ein E-Mail-Empfänger mit E-Mails mit nicht-bestandenen Checks tun soll, die er erhält
+Policies werden im DNS als TXT-Einträge veröffentlicht und geben an, was ein E-Mail-Empfänger mit E-Mails mit nicht-bestandenen Checks tun soll, die er erhält.\\
+
+DMARC sind TXT DNS-Entries die definieren, was der Empfänger mit Mails von seiner Domain(DNS Entry Domain) machen soll. 
+Wo er Spam oder Malware in den Mails dem Absender melden soll (Contact-to-Adresse). 
+Vorallem aber relevant, wenn Mail-Header verändert werden (sending in name of someone else) und so der effektive Eigentümer benachrichtigt werden kann, dass ein Fraud passiert ist.
 
 \newpage
 
@@ -100,7 +112,7 @@ Wenn \textit{DKIM} (DomainKeys Identified Mail) verwendet wird, sollte dies im H
 \newpage
 
 \subsection{Spam Mails}
-tbd (mägge)
+% TODO: Lernziel -> was ist damit gemeint?
 
 \newpage
 
@@ -108,9 +120,15 @@ tbd (mägge)
 
 \subsubsection{Explain NLA}
 \textit{NLA} (Network Level Authentication) is an authentication tool used in Remote Desktop Services or Remote Desktop Connection.
-\textit{NLA} moves the authentication aspect of a remote session from the RDP layer to the network layer. The use of \textit{NLA} is recommended to reduce the attack surface of systems exposed to the RDP protocol.
+\textit{NLA} moves the authentication aspect of a remote session from the RDP layer to the network layer. The use of \textit{NLA} is recommended to reduce the attack surface of systems exposed to the RDP protocol.\\
 
-\textit{NLA} only works with \textbf{challenge-response-authentication protocols}.
+User müssen sich Authentisieren bevor eine RDP Session und ihr Login dann gemacht wird.
+Original wurde bei einem RDP Login gleich eine Verbindung auf die Shell/UI geöffnet, heute aber zuerst PW prompt (wie man es auch kennt).
+Bevor man auf der Maschine ist, holt man ein Kerberos Ticket ab $\rightarrow$ CredSSP-Authentication via TLS mit Certs oder/und Kerberos. 
+
+NLA mit NTLM ist nicht wirklich sehr sicher, lieber mit TLS oder Kerberos.\\
+
+\textit{NLA} only works with \textcolor{red}{\textbf{challenge-response-authentication protocols}}.
 
 \subsubsection{Explain CredSSP}
 Credential Security Support Provider (\textit{CredSSP}) allows credentials to be forwarded to a remote host, where they are then used for authentication. Well-known applications that use this method are the RDP client or PowerShell. For the latter, \textit{CredSSP} can solve the second-hop problem when connecting to another remote host from a remote session.
@@ -123,14 +141,19 @@ Credential Security Support Provider (\textit{CredSSP}) allows credentials to be
 \textbf{Dies geht aber nur bei \textit{Challenge-Response} Verfahren!!}\\
 $\rightarrow$ sobald Passwort übers Netz übermittelt wird, würde MitM wieder funktionieren
 
+\newpage
+
 \subsubsection{Explain why NLA should protect against MitM}
 If a client wants to establish an RDP connection to a terminal server (TS), a MitM could hang itself between this connection.
 The MitM forwards the client's request to the server. The server responds with a \textit{Server Hello + the Cert of the TS}. This response is now forwarded to the client with the \textit{Cert of the MitM} instead of the \textit{Cert of the TS}. The client now responds with a \textit{Client Hello}, etc.
 
 Finally the TS sends a challenge to the client (via the MitM). The client now encrypts the hash of the user (\textit{Hash via username + password}) together with the received \textit{cert of the MitM}. The client now sends this response to the MitM. The MitM would have to modify this response so that the encryption is done with the \textit{TS-Cert} and no longer with the \textit{MitM-Cert}. Since passwords are never sent over the network in the challenge response, the MitM can't modify this response as necessary.
-Thus the RDP connection between the MitM and the server cannot be established.
+Thus the RDP connection between the MitM and the server cannot be established.\\
 
-\newpage
+Antwort an den Server beim Authentifizieren, verschlüsselt der Client das Server-Zertifikat gleich mit um es zurückzuschicken.
+Da aber bei einem Angriff der Client das Cert des MitM Proxies bekommen hat, stimmt das nicht $\rightarrow$ man bemerkt MitM Attack und kann sich so nicht anmelden. 
+PW zum verschlüsseln dieses Pakets (User PW im AD abgelegt) ging bis dahin gar nicht über das Netzwerk, sodass der Proxy das Paket nicht aufbrechen und verändern kann
+$\rightarrow$ \textbf{Mit User AD-PW beim anmelden an RDP Server das bekommene Cert des RDP Server mitverschlüsseln}
 
 \subsubsection{Would 2FA fix the problem of this kind of MitM attack?}
 \textit{2FA} brings no advantage with \textit{MitM}, because if the 2nd factor is confirmed (which the MitM does not intercept), the connection is ultimately established via the MitM anyway.
@@ -139,6 +162,11 @@ Since MitM attacks are no longer possible with NLA, 2FA is not necessary to mini
 \textit{2FA} will not fix the fundamental problem of \textit{MitM}, but the attacker can only hijack the victim if the victim is logging into the target server via \textit{MitM}. Mutual Auth would really solve the issue!
 
 \subsubsection{Challenge-Response}
+Man meldet sich an einem System an, der Server schickt eine \textit{Nonce} die man in einem \textit{HMAC} Hash mit dem PW verarbeitet und so übermittelt.
+So wird \textbf{nie} der Hash alleine oder das PW in Plaintext geschickt. 
+Bei diesem Ansatz muss der Server aber das PW gehasht oder als Plaintext kennen, da er den \textit{HMAC} Hash zum überprüfen ja auch generieren muss.\\
+\textbf{Schwachstelle}: Server mit PW Datenbank!\\
+
 \textcolor{red}{\textbf{Passwort geht nie übers Netz (nur der Hash des Passwortes)}}\\
 
 \begin{minipage}{0.45\linewidth}
@@ -157,7 +185,13 @@ Since MitM attacks are no longer possible with NLA, 2FA is not necessary to mini
 \end{minipage}
 
 \subsubsection{Mutual Authentication}
-tbd
+\textit{Mutual Auth} bezieht sich immer darauf, dass sich beide Seiten mit einem Certificate ausweisen.
+
+\textit{Simpler Ansatz}: Der User hat ein Private/Public Key, der Public Key wird mit sicherem Wege an den Server geleitet. So weiss nun der Server, okay - jemand mit dem Private key und der auch noch die Message signieren kann mit seinem Private Key wird wohl der sein der er angibt zu sein.\\
+\begin{itemize}
+    \item Sicherste Methode, vorallem auch bei SSH Authentication
+    \item wenn das in beiden Richtungen mit dem Signieren gemacht wird, dann ist es wie bei Challenge Response, aber in gut
+\end{itemize}
 
 \subsubsection{What is the difference between the two nmap outputs in the steps above (enabled/disabled NLA)?}
 As you can see below with \textbf{enabled NLA} the nmap output shows \textit{no SSL} (but RDSTLS), in contrast to \textbf{disabled NLA} where SSL is displayed as enabled (in addition to \textit{RDSTLS}).
